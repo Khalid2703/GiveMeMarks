@@ -1,0 +1,49 @@
+# ==================== CORE DEPENDENCIES ====================
+
+# LLM Providers (Dual)
+google-generativeai>=0.3.0
+cohere>=5.0.0
+
+# Environment & Config
+python-dotenv>=1.0.0
+
+# Logging
+loguru>=0.7.0
+
+# Data Processing
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# ==================== PDF & OCR PROCESSING ====================
+
+# PDF Processing
+PyPDF2>=3.0.0
+pdfplumber>=0.10.0
+PyMuPDF>=1.23.0
+
+# OCR Support
+pytesseract>=0.3.10
+pdf2image>=1.16.0
+Pillow>=10.0.0
+
+# ==================== DATABASE ====================
+
+# Supabase Client
+supabase>=2.0.0
+
+# ==================== WEB FRAMEWORK ====================
+
+# Backend API
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+
+# Frontend UI
+streamlit>=1.28.0
+
+# ==================== TESTING ====================
+
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+pytest-asyncio>=0.21.0

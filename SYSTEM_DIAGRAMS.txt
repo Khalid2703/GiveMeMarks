@@ -1,0 +1,221 @@
+# 🎨 SYSTEM ARCHITECTURE & FLOW DIAGRAMS
+
+**Visual Guide to UOH Academic Evaluation System**
+
+---
+
+## 📊 COMPLETE DATA FLOW OVERVIEW
+
+```
+Faculty → Upload PDFs → Frontend (React)
+    ↓
+Backend API (FastAPI) → Save to data/documents/
+    ↓
+Process Request → Academic Evaluator
+    ↓
+For Each PDF:
+    ↓
+PDF Processor → Extract text OR → OCR Processor
+    ↓                              ↓
+    └───────────── Text ────────────┘
+    ↓
+LLM Analyzer (Gemini/Cohere)
+    ↓
+Structured JSON Data
+    ↓
+Validation & Enrichment
+    ↓
+Dual Storage: Excel + Supabase
+    ↓
+Dashboard Analytics Calculation
+    ↓
+Response to Frontend → Faculty views results
+```
+
+---
+
+## 🔄 3-PASS OCR STRATEGY (TASK A)
+
+```
+INPUT: Scanned PDF
+    ↓
+PASS 1: Standard OCR (Tesseract basic)
+    ↓
+Calculate Confidence (0.0-1.0)
+    ├─ >= 0.8 → SUCCESS ✅
+    ├─ 0.5-0.8 → PASS 2
+    └─ < 0.5 → PASS 2
+          ↓
+PASS 2: Enhanced OCR (preprocessing)
+    • Noise reduction
+    • Contrast adjustment
+    • Re-run OCR
+    ↓
+Re-calculate Confidence
+    ├─ >= 0.7 → SUCCESS ✅
+    └─ < 0.7 → PASS 3
+          ↓
+PASS 3: Flag for Manual Review
+    • requires_review: true
+    • List missing fields
+    • Store for faculty review
+    ↓
+OUTPUT: Data + Confidence Metadata
+```
+
+---
+
+## 🤖 DUAL LLM PROVIDER (TASK B)
+
+```
+Extracted Text
+    ↓
+Construct Request:
+  • System Prompt (Zero-hallucination rules)
+  • User Message (JSON data)
+  • Temperature = 0.1
+  • Max Tokens = 2000
+    ↓
+Try PRIMARY: Gemini 1.5 Flash
+    ├─ Success → Parse Response
+    └─ Quota/Error → FALLBACK
+          ↓
+    Cohere Command-R
+    ├─ Success → Parse Response
+    └─ Fail → Manual Review
+          ↓
+Validation:
+  ✓ No invented values?
+  ✓ "Data not available" used?
+  ✓ No medical claims?
+  ✓ Factual only?
+    ↓
+OUTPUT: Structured Analysis
+```
+
+---
+
+## 📊 3 DASHBOARD CHARTS (TASK C)
+
+```
+Student Records Array
+    ↓
+Split into 3 parallel processes:
+    ↓
+┌───────────────┬────────────────┬──────────────┐
+│   CHART 1     │   CHART 2      │   CHART 3    │
+│ CGPA Distrib  │ Subject Avg    │  At-Risk     │
+└───────────────┴────────────────┴──────────────┘
+    ↓                ↓               ↓
+Group by CGPA   Loop courses   Check flags:
+ranges          Calculate avg   • CGPA < 6
+Count students  Classify diff   • Attend < 75%
+                                • Backlogs >= 3
+    ↓                ↓               ↓
+Histogram       Bar Chart       Priority Table
+Data            Data            (High/Med/Low)
+```
+
+---
+
+## 📄 EXCEL 3-SHEET STRUCTURE (TASK D)
+
+```
+Excel Workbook
+    ↓
+┌─────────────┬──────────────┬─────────────┐
+│  SHEET 1    │  SHEET 2     │  SHEET 3    │
+│ Raw Records │ Subjects     │ At-Risk     │
+└─────────────┴──────────────┴─────────────┘
+
+SHEET 1: All student data
+  • 16 columns
+  • Color-coded by confidence
+  • Auto-filter enabled
+
+SHEET 2: Subject statistics
+  • Course averages
+  • Difficulty classification
+  • Formulas for calculations
+
+SHEET 3: At-risk students
+  • Priority levels (High/Med/Low)
+  • Risk factors listed
+  • Action recommendations
+```
+
+---
+
+## 🎯 FACULTY WORKFLOW
+
+```
+1. LOGIN → Web Interface
+
+2. UPLOAD → Select PDFs
+   • Drag & drop
+   • Multiple files
+   • See progress
+
+3. PROCESS → Click "Process Documents"
+   • Real-time progress
+   • Success/fail count
+   • Estimated time
+
+4. REVIEW → View Results
+   • Student table
+   • Statistics
+   • At-risk flags
+
+5. ACTIONS:
+   ├─ Download Excel Report
+   ├─ View Dashboard Charts
+   ├─ Review Flagged Documents
+   └─ Export to LMS
+
+6. FOLLOW-UP:
+   • Email at-risk students
+   • Schedule counseling
+   • Adjust curriculum
+   • Report to department
+```
+
+---
+
+## 🔐 SECURITY LAYERS
+
+```
+Layer 1: FRONTEND
+  • HTTPS only
+  • No local storage
+  • Files cleared after upload
+
+Layer 2: API
+  • CORS configured
+  • Rate limiting
+  • Auth tokens (future)
+
+Layer 3: DATABASE
+  • Row Level Security
+  • Encrypted at rest
+  • Access logs
+
+Layer 4: FILE STORAGE
+  • Auto-delete after processing
+  • 30-day retention for reports
+  • No PII in logs
+
+Layer 5: LLM
+  • Anonymized data
+  • API keys in .env
+  • No sensitive logging
+```
+
+---
+
+**For visual diagrams in presentation, use tools like:**
+- Draw.io (free)
+- Lucidchart
+- Mermaid (markdown-based)
+- PowerPoint SmartArt
+
+**This text file provides the logical flow for creating visuals.**

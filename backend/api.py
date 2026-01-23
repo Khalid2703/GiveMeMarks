@@ -21,10 +21,11 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
-
+from src.core.dashboard_analytics import DashboardAnalytics
 from src.core.academic_evaluator import AcademicEvaluator
 from src.utils.logger import get_logger
 from config.settings import DOCUMENT_DIR, EXCEL_DIR
+
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -359,6 +360,27 @@ async def global_exception_handler(request, exc):
             "detail": str(exc)
         }
     )
+
+@app.get("/analytics/cgpa-distribution")
+async def get_cgpa_distribution():
+    """Get CGPA distribution data for Chart 1"""
+    students = get_all_students_from_db()  # Your existing function
+    distribution = DashboardAnalytics.calculate_cgpa_distribution(students)
+    return {"distribution": distribution}
+
+@app.get("/analytics/subject-performance")
+async def get_subject_performance():
+    """Get subject averages for Chart 2"""
+    students = get_all_students_from_db()
+    subjects = DashboardAnalytics.calculate_subject_averages(students)
+    return {"subjects": subjects}
+
+@app.get("/analytics/at-risk-students")
+async def get_at_risk_students():
+    """Get at-risk students for Chart 3"""
+    students = get_all_students_from_db()
+    at_risk = DashboardAnalytics.identify_at_risk_students(students)
+    return {"at_risk_students": at_risk}
 
 
 # Development server
