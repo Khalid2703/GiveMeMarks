@@ -48,6 +48,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Initialize logger
@@ -421,14 +422,14 @@ async def count_documents():
 async def get_dashboard_stats():
     """
     Get comprehensive statistics for dashboard visualization
-    Returns data for all charts: CGPA distribution, department stats, trends
+    Returns data for ALL STUDENTS from ALL BATCHES
     """
     try:
         import pandas as pd
         import json
         from collections import Counter
         
-        # Read the latest batch file
+        # Read batch metadata
         batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
         if not batch_metadata_file.exists():
             logger.warning("batch_metadata.json not found")
@@ -437,20 +438,38 @@ async def get_dashboard_stats():
         with open(batch_metadata_file, 'r') as f:
             metadata = json.load(f)
         
-        current_batch = metadata.get('current_batch')
-        if not current_batch:
-            logger.warning("No current_batch in metadata")
-            return {"error": "No current batch", "total_students": 0}
+        batches = metadata.get('batches', [])
+        if not batches:
+            logger.warning("No batches found")
+            return {"error": "No batches found", "total_students": 0}
         
-        batch_file = EXCEL_DIR / current_batch
-        if not batch_file.exists():
-            logger.warning(f"Batch file not found: {batch_file}")
-            return {"error": "Batch file not found", "total_students": 0}
+        logger.info(f"Loading data from {len(batches)} batches")
         
-        logger.info(f"Reading batch file: {batch_file}")
+        # Read and combine ALL batch files
+        all_dfs = []
+        for batch in batches:
+            batch_filename = batch.get('filename')
+            if batch_filename:
+                batch_path = EXCEL_DIR / batch_filename
+                if batch_path.exists():
+                    try:
+                        df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
+                        all_dfs.append(df_temp)
+                        logger.info(f"Loaded {len(df_temp)} students from {batch_filename}")
+                    except Exception as e:
+                        logger.warning(f"Failed to read {batch_filename}: {e}")
         
-        # Read Excel data
-        df = pd.read_excel(batch_file, sheet_name='Student Data')
+        if not all_dfs:
+            logger.warning("No valid batch files found")
+            return {"error": "No valid batch files", "total_students": 0}
+        
+        # Combine all dataframes
+        df = pd.concat(all_dfs, ignore_index=True)
+        logger.info(f"Total combined students: {len(df)}")
+        
+        # Remove duplicates based on Roll Number
+        df = df.drop_duplicates(subset=['Roll Number'], keep='last')
+        logger.info(f"After removing duplicates: {len(df)} unique students")
         
         # Convert to list of dicts
         students = df.to_dict('records')
@@ -597,7 +616,22 @@ async def get_all_batches_with_data():
         with open(batch_metadata_file, 'r') as f:
             metadata = json.load(f)
         
-        return {"batches": metadata.get('batches', [])}
+        # Format batches with proper structure
+        batches = metadata.get('batches', [])
+        formatted_batches = []
+        
+        for batch in batches:
+            formatted_batches.append({
+                "filename": batch.get('filename'),
+                "student_count": batch.get('record_count', 0),  # Map record_count to student_count
+                "created_at": batch.get('created_at'),
+                "file_path": batch.get('file_path')
+            })
+        
+        return {
+            "batches": formatted_batches,
+            "current_batch": metadata.get('current_batch')
+        }
         
     except Exception as e:
         logger.error(f"Error getting batches: {e}")
@@ -648,73 +682,128 @@ async def ai_query_endpoint(request: dict):
     """
     try:
         query = request.get("query", "")
-        batch_filename = request.get("batch", None)  # Optional: specific batch to query
+        batch_filenames = request.get("batches", [])  # Accept multiple batches
+        
+        # Also support single batch for backward compatibility
+        single_batch = request.get("batch", None)
+        if single_batch and not batch_filenames:
+            batch_filenames = [single_batch]
         
         if not query:
-            return {"error": "No query provided", "response": "Please provide a query."}
+            return JSONResponse(
+                content={"error": "No query provided", "response": "Please provide a query."},
+                headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*",
+                    "Access-Control-Allow-Headers": "*"
+                }
+            )
         
-        logger.info(f"AI Query: {query} | Batch: {batch_filename or 'all'}")
+        logger.info(f"AI Query: {query} | Batches: {batch_filenames or 'all'}")
         
         import pandas as pd
         import json
-        from src.core.cohere_query_handler_simple import query_academic_data_with_cohere
+        from src.core.gemini_ai_agent import GeminiAIAgent
         
         # Load batch data for context
         batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
         
         if not batch_metadata_file.exists():
-            return {
-                "response": "No processed data available yet. Please upload and process documents first.",
-                "timestamp": datetime.now().isoformat(),
-                "query": query
-            }
+            return JSONResponse(
+                content={
+                    "response": "No processed data available yet. Please upload and process documents first.",
+                    "timestamp": datetime.now().isoformat(),
+                    "query": query
+                },
+                headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*",
+                    "Access-Control-Allow-Headers": "*"
+                }
+            )
         
         with open(batch_metadata_file, 'r') as f:
             metadata = json.load(f)
         
-        # Determine which batch to use
-        if batch_filename:
-            # Use specific batch
-            target_batch = batch_filename
+        # Load data from all selected batches
+        all_dfs = []
+        batch_names = []
+        
+        if batch_filenames:
+            # Use specified batches
+            for batch_filename in batch_filenames:
+                batch_file = EXCEL_DIR / batch_filename
+                if batch_file.exists():
+                    try:
+                        df_temp = pd.read_excel(batch_file, sheet_name='Student Data')
+                        all_dfs.append(df_temp)
+                        batch_names.append(batch_filename)
+                        logger.info(f"Loaded {len(df_temp)} students from {batch_filename}")
+                    except Exception as e:
+                        logger.warning(f"Failed to read {batch_filename}: {e}")
         else:
-            # Use latest batch
-            target_batch = metadata.get('current_batch')
+            # Use current batch if none specified
+            current_batch = metadata.get('current_batch')
+            if current_batch:
+                batch_file = EXCEL_DIR / current_batch
+                if batch_file.exists():
+                    df_temp = pd.read_excel(batch_file, sheet_name='Student Data')
+                    all_dfs.append(df_temp)
+                    batch_names.append(current_batch)
+                    logger.info(f"Loaded {len(df_temp)} students from {current_batch}")
         
-        if not target_batch:
-            return {
-                "response": "No batch data found. Please process documents first.",
-                "timestamp": datetime.now().isoformat(),
-                "query": query
-            }
+        if not all_dfs:
+            return JSONResponse(
+                content={
+                    "response": "No batch data found or unable to read batch files.",
+                    "timestamp": datetime.now().isoformat(),
+                    "query": query
+                },
+                headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*",
+                    "Access-Control-Allow-Headers": "*"
+                }
+            )
         
-        batch_file = EXCEL_DIR / target_batch
+        # Combine all dataframes
+        df = pd.concat(all_dfs, ignore_index=True)
+        logger.info(f"Combined total: {len(df)} students from {len(batch_names)} batch(es)")
         
-        if not batch_file.exists():
-            return {
-                "response": f"Batch file '{target_batch}' not found.",
-                "timestamp": datetime.now().isoformat(),
-                "query": query
-            }
+        # Initialize Gemini AI Agent
+        ai_agent = GeminiAIAgent()
         
-        # Read student data
-        df = pd.read_excel(batch_file, sheet_name='Student Data')
-        
-        # Use Cohere to query the data
-        result = query_academic_data_with_cohere(
+        # Query with Gemini
+        result = ai_agent.query(
             question=query,
             df=df,
-            batch_name=target_batch
+            batch_name=f"{len(batch_names)} batches: {', '.join([b.split('_')[-1].replace('.xlsx', '') for b in batch_names])}"
         )
         
-        return result
+        logger.info(f"AI response generated successfully")
+        return JSONResponse(
+            content=result,
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*"
+            }
+        )
         
     except Exception as e:
         logger.error(f"AI Query error: {e}", exc_info=True)
-        return {
-            "error": str(e),
-            "response": f"Sorry, I encountered an error: {str(e)}. Please try again.",
-            "timestamp": datetime.now().isoformat()
-        }
+        return JSONResponse(
+            content={
+                "error": str(e),
+                "response": f"Sorry, I encountered an error: {str(e)}. Please try again.",
+                "timestamp": datetime.now().isoformat()
+            },
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*"
+            }
+        )
 
 # Development server
 if __name__ == "__main__":

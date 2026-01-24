@@ -1,0 +1,243 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   AI QUERY QUICK REFERENCE CARD                              ║
+║                   University of Hyderabad System                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+🚀 QUICK START
+───────────────────────────────────────────────────────────────────────────────
+
+1. START BACKEND
+   cd C:\Users\hp\UOH_Hackathon
+   python main.py
+   
+2. START FRONTEND
+   cd frontend
+   npm run dev
+   
+3. OPEN BROWSER
+   http://localhost:5173
+   
+4. GO TO AI QUERY PAGE
+   Click "AI Query" in sidebar
+
+
+📊 HOW TO USE AI QUERY
+───────────────────────────────────────────────────────────────────────────────
+
+STEP 1: Select Batch
+   └─ Use dropdown at top to select which batch to query
+   └─ Shows student count for each batch
+   └─ Auto-selects most recent batch
+
+STEP 2: Ask Question
+   └─ Type your question in the input box
+   └─ Or click suggested questions
+   └─ Press Enter or click "Send"
+
+STEP 3: Get Answer
+   └─ AI analyzes selected batch data
+   └─ Shows detailed answer with context
+   └─ Displays stats (students, CGPA, departments)
+
+
+💡 EXAMPLE QUERIES
+───────────────────────────────────────────────────────────────────────────────
+
+BASIC STATISTICS:
+  • What is the average CGPA?
+  • What is the highest CGPA?
+  • How many students are there in total?
+
+DEPARTMENT ANALYSIS:
+  • How many students are in Computer Science?
+  • What is the average CGPA in Mathematics department?
+  • Which department has the highest average CGPA?
+  • List all departments
+
+TOP PERFORMERS:
+  • Who are the top 5 students?
+  • Show me top 10 performers
+  • Who has the highest CGPA?
+  • List students with CGPA above 9.0
+
+DISTRIBUTION QUERIES:
+  • What is the CGPA distribution?
+  • How many students have CGPA between 8 and 9?
+  • Show me grade distribution
+  • What percentage of students have CGPA above 8?
+
+SPECIFIC SEARCHES:
+  • Find students with CGPA above 9.5
+  • Show me all Computer Science students
+  • Who scored between 7.5 and 8.5 CGPA?
+  • List students in Physics department
+
+COMPARATIVE:
+  • Compare CGPA across departments
+  • Which department performs better?
+  • What's the difference between top and average students?
+  • How does Computer Science compare to Mathematics?
+
+
+🎯 WHAT THE AI KNOWS
+───────────────────────────────────────────────────────────────────────────────
+
+From selected batch, AI has access to:
+  ✅ Student names and roll numbers
+  ✅ Department information
+  ✅ CGPA data
+  ✅ Email addresses
+  ✅ Course information (if available)
+  ✅ Statistical summaries
+  ✅ Distribution data
+
+
+⚙️ TECHNICAL DETAILS
+───────────────────────────────────────────────────────────────────────────────
+
+AI Model: Cohere Command-A
+Context Size: Full batch data
+Response Time: 2-5 seconds
+Accuracy: Based on processed Excel data
+Data Source: Uploaded and processed PDF documents
+
+
+🎨 UI FEATURES
+───────────────────────────────────────────────────────────────────────────────
+
+BATCH SELECTOR
+  • Dropdown with all available batches
+  • Shows student count per batch
+  • Refresh button to reload batches
+  • Auto-selects most recent
+
+CONTEXT DISPLAY
+  • Total students analyzed
+  • Average CGPA
+  • Number of departments
+  • Batch used
+  • Model information
+
+MESSAGE BUBBLES
+  • User messages: Blue gradient
+  • AI responses: White with border
+  • Context cards below answers
+  • Loading animation during processing
+
+
+🐛 TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────────────────
+
+PROBLEM: No batches showing
+SOLUTION:
+  1. Upload PDFs on Homepage
+  2. Click "Process" button
+  3. Wait for processing to complete
+  4. Return to AI Query and refresh
+
+PROBLEM: "No response" or error
+SOLUTION:
+  1. Check backend is running (terminal)
+  2. Verify Cohere API key in .env
+  3. Ensure batch is selected
+  4. Check internet connection
+
+PROBLEM: Hardcoded/generic answers
+SOLUTION:
+  1. Restart backend server
+  2. Clear browser cache
+  3. Verify using Cohere (not Gemini)
+  4. Check logs for errors
+
+PROBLEM: Slow responses
+SOLUTION:
+  1. Large batches take longer
+  2. Normal for 100+ students
+  3. Be patient (2-5 seconds)
+
+
+📋 RESPONSE FORMAT
+───────────────────────────────────────────────────────────────────────────────
+
+Every AI response includes:
+  
+  [AI ANSWER]
+  Detailed answer to your question with specific data points
+  
+  [CONTEXT CARD]
+  • 150 students analyzed
+  • Avg CGPA: 7.85
+  • 4 departments
+  • Batch: batch_2025-01-24.xlsx
+  • Model: Cohere command-a
+
+
+🔐 API CONFIGURATION
+───────────────────────────────────────────────────────────────────────────────
+
+.env file settings:
+  
+  COHERE_API_KEY=your_key_here
+  COHERE_MODEL=command-a
+  
+  GEMINI_API_KEY=your_key_here    # For PDF processing
+  GEMINI_MODEL=gemini-2.5-flash   # For PDF processing
+
+Note: Cohere is ONLY for AI Query, Gemini is ONLY for PDF processing
+
+
+✅ SUCCESS CHECKLIST
+───────────────────────────────────────────────────────────────────────────────
+
+Before using AI Query, ensure:
+  □ Backend running (http://localhost:8000)
+  □ Frontend running (http://localhost:5173)
+  □ At least one batch processed
+  □ Batch selected in dropdown
+  □ Cohere API key configured
+  □ Internet connection active
+
+
+💻 KEYBOARD SHORTCUTS
+───────────────────────────────────────────────────────────────────────────────
+
+  Enter          Send message
+  Shift+Enter    New line in message
+  Esc            Clear input
+
+
+🎓 BEST PRACTICES
+───────────────────────────────────────────────────────────────────────────────
+
+1. BE SPECIFIC
+   ❌ "Tell me about students"
+   ✅ "What is the average CGPA in Computer Science?"
+
+2. ONE QUESTION AT A TIME
+   ❌ "What's the average CGPA and top students and department counts?"
+   ✅ "What is the average CGPA?" (then ask next question)
+
+3. USE NATURAL LANGUAGE
+   ✅ "How many students scored above 9?"
+   ✅ "Show me top performers"
+   ✅ "What's the distribution?"
+
+4. VERIFY BATCH SELECTION
+   Always check correct batch is selected before querying
+
+
+📞 SUPPORT
+───────────────────────────────────────────────────────────────────────────────
+
+If issues persist:
+  1. Check backend logs in terminal
+  2. Run test: python test_cohere_ai_query.py
+  3. Verify API keys
+  4. Restart both servers
+  5. Check browser console (F12)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+Last Updated: January 24, 2026
+Status: ✅ PRODUCTION READY
+═══════════════════════════════════════════════════════════════════════════════

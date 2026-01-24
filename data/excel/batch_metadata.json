@@ -1,24 +1,6 @@
 {
   "batches": [
     {
-      "filename": "academic_batch_batch_2026-01-23_20260123_181502.xlsx",
-      "created_at": "2026-01-23T18:15:02.685801",
-      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_181502.xlsx",
-      "record_count": 1
-    },
-    {
-      "filename": "academic_batch_batch_2026-01-23_20260123_182556.xlsx",
-      "created_at": "2026-01-23T18:25:56.179332",
-      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_182556.xlsx",
-      "record_count": 1
-    },
-    {
-      "filename": "academic_batch_batch_2026-01-23_20260123_182937.xlsx",
-      "created_at": "2026-01-23T18:29:37.326527",
-      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_182937.xlsx",
-      "record_count": 1
-    },
-    {
       "filename": "academic_batch_batch_2026-01-23_20260123_183551.xlsx",
       "created_at": "2026-01-23T18:35:52.143030",
       "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_183551.xlsx",
@@ -59,7 +41,25 @@
       "created_at": "2026-01-24T10:37:59.044661",
       "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-24_20260124_103758.xlsx",
       "record_count": 6
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-24_20260124_220848.xlsx",
+      "created_at": "2026-01-24T22:08:49.529860",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-24_20260124_220848.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-24_20260124_221202.xlsx",
+      "created_at": "2026-01-24T22:12:02.647242",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-24_20260124_221202.xlsx",
+      "record_count": 4
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-24_20260125_002244.xlsx",
+      "created_at": "2026-01-25T00:22:44.364322",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-24_20260125_002244.xlsx",
+      "record_count": 2
     }
   ],
-  "current_batch": "academic_batch_batch_2026-01-24_20260124_103758.xlsx"
+  "current_batch": "academic_batch_batch_2026-01-24_20260125_002244.xlsx"
 }

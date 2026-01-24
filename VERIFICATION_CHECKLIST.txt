@@ -1,0 +1,345 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                  COHERE AI QUERY - VERIFICATION CHECKLIST                    ║
+║                          Use This To Test Everything                         ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Before Starting:
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Backend is stopped (close any running Python processes)
+□ Frontend is stopped (close any running npm processes)
+□ .env file exists with valid COHERE_API_KEY
+□ At least one batch has been processed (Excel files exist)
+
+
+STEP 1: Start Backend
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Open terminal in: C:\Users\hp\UOH_Hackathon
+□ Run: python main.py
+□ Wait for: "Uvicorn running on http://0.0.0.0:8000"
+□ Check: No error messages about Cohere
+□ Test: Open http://localhost:8000 in browser
+□ Verify: See {"message": "UOH Academic Evaluation API"}
+
+
+STEP 2: Test Backend API
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Test status endpoint:
+  URL: http://localhost:8000/status
+  Expected: {"status":"operational", "llm_provider":"cohere"...}
+
+□ Test batches endpoint:
+  URL: http://localhost:8000/api/batches/all
+  Expected: {"batches":[{"filename":"batch_...","student_count":...}]}
+
+□ Check logs in terminal for any errors
+
+
+STEP 3: Start Frontend
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Open NEW terminal
+□ Navigate to: C:\Users\hp\UOH_Hackathon\frontend
+□ Run: npm run dev
+□ Wait for: "Local: http://localhost:5173"
+□ Check: No compilation errors
+□ Verify: Server is running
+
+
+STEP 4: Test Frontend Loading
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Open browser: http://localhost:5173
+□ Homepage loads without white screen
+□ Sidebar visible on left
+□ Can see all 5 menu items (Homepage, Results, Dashboard, AI Query, Settings)
+□ No console errors (press F12)
+
+
+STEP 5: Navigate to AI Query Page
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Click "AI Query" in sidebar
+□ Page loads with title "AI Query Assistant"
+□ Subtitle mentions "Powered by Cohere"
+□ Batch selector visible at top
+□ Chat area is visible
+
+
+STEP 6: Test Batch Selector
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Batch dropdown shows available batches
+□ Each batch shows student count in parentheses
+□ Refresh button (↻) is visible
+□ One batch is pre-selected
+□ Context info card appears below selector
+□ Context shows: total students, avg CGPA, departments
+
+
+STEP 7: Test Suggested Questions
+═══════════════════════════════════════════════════════════════════════════════
+
+If no messages yet:
+□ 5 suggested questions are visible
+□ Questions are clickable
+□ Clicking fills input box
+□ Doesn't send automatically
+
+
+STEP 8: Send First Query
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Type: "What is the average CGPA?"
+□ Send button is enabled (not grayed)
+□ Click Send button
+□ User message appears in chat (blue bubble, right side)
+□ Loading animation appears
+□ Loading says "Analyzing with Cohere AI..."
+□ Loading shows student count being processed
+
+
+STEP 9: Verify AI Response
+═══════════════════════════════════════════════════════════════════════════════
+
+Wait for response (2-5 seconds):
+
+□ Loading disappears
+□ AI response appears (white bubble, left side)
+□ Response contains actual numbers (not "I don't have access...")
+□ Response mentions specific CGPA value
+□ Response is detailed (not just "7.85")
+
+
+STEP 10: Check Context Card
+═══════════════════════════════════════════════════════════════════════════════
+
+Below the AI response:
+
+□ Context card is visible
+□ Shows "Data Context:" header with database icon
+□ Shows total students analyzed
+□ Shows average CGPA
+□ Shows number of departments
+□ Shows batch filename
+□ Shows "Model: Cohere command-a" (in blue)
+
+
+STEP 11: Test Multiple Queries
+═══════════════════════════════════════════════════════════════════════════════
+
+Query 2: "Who are the top 5 students?"
+□ Response lists actual student names
+□ Shows roll numbers
+□ Shows CGPA for each
+□ Shows departments
+□ Context card appears
+
+Query 3: "How many students are in Computer Science?"
+□ Response gives specific number
+□ Might mention percentage
+□ Context card appears
+
+Query 4: "What is the CGPA distribution?"
+□ Response shows ranges (9-10, 8-9, etc.)
+□ Gives counts for each range
+□ Context card appears
+
+
+STEP 12: Test Batch Switching
+═══════════════════════════════════════════════════════════════════════════════
+
+If multiple batches exist:
+
+□ Select different batch from dropdown
+□ Context info updates with new stats
+□ Ask same question again
+□ Response reflects data from NEW batch
+□ Numbers are different if batches differ
+
+
+STEP 13: Test Error Handling
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Try sending empty message → Button should be disabled
+□ Unselect batch (if possible) → Should show warning
+□ Stop backend → Error message appears (gracefully)
+□ Restart backend → Can query again
+
+
+STEP 14: Test UI Elements
+═══════════════════════════════════════════════════════════════════════════════
+
+□ Scroll works in chat area
+□ Input box auto-focuses
+□ Enter key sends message
+□ Shift+Enter adds new line
+□ Refresh button reloads batches
+□ Messages have nice gradient styling
+□ Loading animation is smooth
+
+
+STEP 15: Check Browser Console
+═══════════════════════════════════════════════════════════════════════════════
+
+Press F12 → Console tab:
+
+□ No red errors
+□ May see blue info messages (OK)
+□ May see network calls to /api/ai/query (OK)
+□ No "undefined" errors
+□ No CORS errors
+
+
+STEP 16: Check Backend Logs
+═══════════════════════════════════════════════════════════════════════════════
+
+In backend terminal:
+
+□ See "AI Query: [your question]" logs
+□ See "Reading batch file: ..." logs
+□ See "Loaded X students from batch" logs
+□ See "AI response generated successfully" logs
+□ No Python errors or tracebacks
+
+
+STEP 17: Verify Response Quality
+═══════════════════════════════════════════════════════════════════════════════
+
+Responses should:
+
+□ NOT say "I don't have access to data"
+□ NOT say "I'm Claude" or "I'm an AI"
+□ NOT give generic/vague answers
+□ INCLUDE specific numbers from your data
+□ CITE student names when relevant
+□ REFERENCE the batch being queried
+□ BE conversational but professional
+
+
+STEP 18: Final Integration Test
+═══════════════════════════════════════════════════════════════════════════════
+
+Full workflow:
+
+□ Upload new PDFs on Homepage
+□ Process them
+□ Go to AI Query
+□ Refresh batches
+□ See new batch appear
+□ Select new batch
+□ Query about new data
+□ Get accurate responses about new students
+
+
+COMMON ISSUES CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+If responses are still hardcoded:
+□ Check backend is using NEW code
+□ Restart backend completely (Ctrl+C, then restart)
+□ Clear browser cache (Ctrl+Shift+Delete)
+□ Verify import statement: "from src.core.cohere_ai_agent import CohereAIAgent"
+
+If Cohere errors:
+□ Check COHERE_API_KEY in .env is valid
+□ Test API key at: https://dashboard.cohere.com/
+□ Check internet connection
+□ Verify quota not exceeded
+
+If no batches:
+□ Go to Homepage
+□ Upload PDF files
+□ Click "Process"
+□ Wait for completion
+□ Return to AI Query
+□ Click refresh button
+
+If batch errors:
+□ Check data/excel/ folder exists
+□ Check batch_metadata.json exists
+□ Verify .xlsx files are not corrupted
+□ Check file permissions
+
+If UI issues:
+□ Check frontend/package.json dependencies
+□ Run: npm install
+□ Clear node_modules and reinstall
+□ Check browser is modern (Chrome/Firefox latest)
+
+
+SUCCESS CRITERIA
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ All items checked above
+✅ Responses are dynamic (cite actual data)
+✅ Different queries give different responses
+✅ Different batches give different responses
+✅ Context cards show correct stats
+✅ Model shows "Cohere command-a"
+✅ No hardcoded text like "I don't have access..."
+✅ Student names appear in responses
+✅ Specific numbers appear in responses
+✅ UI is beautiful and responsive
+✅ No errors in console or terminal
+
+
+TROUBLESHOOTING COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+Test Cohere directly:
+  python -c "from src.core.cohere_ai_agent import CohereAIAgent; print('OK')"
+
+Run full test suite:
+  python test_cohere_ai_query.py
+
+Check API endpoint manually:
+  curl http://localhost:8000/api/batches/all
+
+Test query endpoint:
+  curl -X POST http://localhost:8000/api/ai/query \
+    -H "Content-Type: application/json" \
+    -d '{"query":"What is the average CGPA?"}'
+
+
+FINAL VERIFICATION
+═══════════════════════════════════════════════════════════════════════════════
+
+The system is working correctly if:
+
+1. You ask: "What is the average CGPA?"
+   Response includes: Actual CGPA number from your data
+
+2. You ask: "Who are the top 5 students?"
+   Response includes: Real student names from your data
+
+3. You ask: "How many students in CS?"
+   Response includes: Actual count from your data
+
+4. Context card shows: Real stats matching your batch
+
+5. Model shows: "Cohere command-a"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+If ALL items above are checked: 🎉 CONGRATULATIONS! 🎉
+
+Your AI Query with Cohere is working perfectly!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Next: Demo to your team! Show them:
+  • Real-time AI responses
+  • Batch selection
+  • Accurate data analysis
+  • Beautiful UI
+  • Lightning-fast responses
+
+READY FOR PRESENTATION! 🚀
+
+═══════════════════════════════════════════════════════════════════════════════
