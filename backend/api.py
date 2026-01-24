@@ -415,6 +415,195 @@ async def count_documents():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ========== NEW ENDPOINTS FOR ENHANCED FEATURES ==========
+
+@app.get("/api/dashboard/stats")
+async def get_dashboard_stats():
+    """
+    Get comprehensive statistics for dashboard visualization
+    Returns data for all charts: CGPA distribution, department stats, trends
+    """
+    try:
+        import pandas as pd
+        import json
+        from collections import Counter
+        
+        # Read the latest batch file
+        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+        if not batch_metadata_file.exists():
+            logger.warning("batch_metadata.json not found")
+            return {"error": "No batch metadata found", "total_students": 0}
+        
+        with open(batch_metadata_file, 'r') as f:
+            metadata = json.load(f)
+        
+        current_batch = metadata.get('current_batch')
+        if not current_batch:
+            logger.warning("No current_batch in metadata")
+            return {"error": "No current batch", "total_students": 0}
+        
+        batch_file = EXCEL_DIR / current_batch
+        if not batch_file.exists():
+            logger.warning(f"Batch file not found: {batch_file}")
+            return {"error": "Batch file not found", "total_students": 0}
+        
+        logger.info(f"Reading batch file: {batch_file}")
+        
+        # Read Excel data
+        df = pd.read_excel(batch_file, sheet_name='Student Data')
+        
+        # Convert to list of dicts
+        students = df.to_dict('records')
+        logger.info(f"Found {len(students)} students in batch")
+        
+        # Calculate statistics
+        cgpa_values = []
+        for s in students:
+            try:
+                cgpa = s.get('CGPA')
+                if pd.notna(cgpa):
+                    cgpa_values.append(float(cgpa))
+            except (ValueError, TypeError):
+                continue
+        
+        departments = [s['Department'] for s in students if pd.notna(s.get('Department'))]
+        
+        # CGPA Distribution
+        cgpa_dist = [
+            {"range": "9.0-10.0", "count": sum(1 for c in cgpa_values if 9.0 <= c <= 10.0)},
+            {"range": "8.0-8.9", "count": sum(1 for c in cgpa_values if 8.0 <= c < 9.0)},
+            {"range": "7.0-7.9", "count": sum(1 for c in cgpa_values if 7.0 <= c < 8.0)},
+            {"range": "6.0-6.9", "count": sum(1 for c in cgpa_values if 6.0 <= c < 7.0)},
+            {"range": "Below 6.0", "count": sum(1 for c in cgpa_values if c < 6.0)},
+        ]
+        
+        # Department Distribution
+        dept_counter = Counter(departments)
+        dept_dist = [{"name": dept, "count": count} for dept, count in dept_counter.items()]
+        
+        # Top Performers
+        top_students = sorted(
+            [s for s in students if pd.notna(s.get('CGPA'))],
+            key=lambda x: float(x.get('CGPA', 0)) if pd.notna(x.get('CGPA')) else 0,
+            reverse=True
+        )[:10]
+        
+        top_performers = [{
+            'name': s.get('Student Name', 'N/A'),
+            'roll_number': s.get('Roll Number', 'N/A'),
+            'department': s.get('Department', 'N/A'),
+            'cgpa': round(float(s.get('CGPA', 0)), 2) if pd.notna(s.get('CGPA')) else 0
+        } for s in top_students]
+        
+        avg_cgpa = round(sum(cgpa_values) / len(cgpa_values), 2) if cgpa_values else 0
+        
+        response = {
+            "total_students": len(students),
+            "average_cgpa": avg_cgpa,
+            "cgpa_distribution": cgpa_dist,
+            "departments": dept_dist,
+            "top_performers": top_performers
+        }
+        
+        logger.info(f"Returning dashboard stats: {len(students)} students, avg CGPA {avg_cgpa}")
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error getting dashboard stats: {e}", exc_info=True)
+        return {"error": str(e), "total_students": 0}
+
+
+@app.get("/api/search/students")
+async def search_students(query: str = "", department: str = "", min_cgpa: float = 0.0, max_cgpa: float = 10.0):
+    """
+    Search students with filters
+    Query params: query (name/roll), department, min_cgpa, max_cgpa
+    """
+    try:
+        import pandas as pd
+        import json
+        
+        # Read the latest batch file
+        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+        if not batch_metadata_file.exists():
+            return {"results": [], "count": 0}
+        
+        with open(batch_metadata_file, 'r') as f:
+            metadata = json.load(f)
+        
+        current_batch = metadata.get('current_batch')
+        if not current_batch:
+            return {"results": [], "count": 0}
+        
+        batch_file = EXCEL_DIR / current_batch
+        if not batch_file.exists():
+            return {"results": [], "count": 0}
+        
+        logger.info(f"Searching students with query: '{query}'")
+        
+        # Read Excel data
+        df = pd.read_excel(batch_file, sheet_name='Student Data')
+        
+        # Apply filters
+        if query:
+            df = df[
+                df['Student Name'].str.contains(query, case=False, na=False) |
+                df['Roll Number'].astype(str).str.contains(query, case=False, na=False)
+            ]
+        
+        if department:
+            df = df[df['Department'].str.contains(department, case=False, na=False)]
+        
+        # CGPA filter
+        df['CGPA_numeric'] = pd.to_numeric(df['CGPA'], errors='coerce')
+        df = df[(df['CGPA_numeric'] >= min_cgpa) & (df['CGPA_numeric'] <= max_cgpa)]
+        
+        # Convert to list of dicts and format
+        results = []
+        for _, row in df.iterrows():
+            results.append({
+                "name": row.get('Student Name', 'N/A'),
+                "roll_number": row.get('Roll Number', 'N/A'),
+                "department": row.get('Department', 'N/A'),
+                "cgpa": round(float(row.get('CGPA', 0)), 2) if pd.notna(row.get('CGPA')) else 0,
+                "email": row.get('Email', 'N/A'),
+                "semester": row.get('Semester', 'N/A')
+            })
+        
+        logger.info(f"Found {len(results)} matching students")
+        
+        return {
+            "results": results,
+            "count": len(results)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error searching students: {e}", exc_info=True)
+        return {"error": str(e), "results": [], "count": 0}
+
+
+@app.get("/api/batches/all")
+async def get_all_batches_with_data():
+    """
+    Get all batches with their metadata and student counts
+    """
+    try:
+        import json
+        
+        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+        if not batch_metadata_file.exists():
+            return {"batches": []}
+        
+        with open(batch_metadata_file, 'r') as f:
+            metadata = json.load(f)
+        
+        return {"batches": metadata.get('batches', [])}
+        
+    except Exception as e:
+        logger.error(f"Error getting batches: {e}")
+        return {"error": str(e), "batches": []}
+
+
 # Error handlers
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
@@ -450,6 +639,82 @@ async def get_at_risk_students():
     at_risk = DashboardAnalytics.identify_at_risk_students(students)
     return {"at_risk_students": at_risk}
 
+# AI Query Backend with Cohere
+@app.post("/api/ai/query")
+async def ai_query_endpoint(request: dict):
+    """
+    AI Query endpoint - Uses Cohere to answer questions about academic data
+    Supports batch selection for efficient querying
+    """
+    try:
+        query = request.get("query", "")
+        batch_filename = request.get("batch", None)  # Optional: specific batch to query
+        
+        if not query:
+            return {"error": "No query provided", "response": "Please provide a query."}
+        
+        logger.info(f"AI Query: {query} | Batch: {batch_filename or 'all'}")
+        
+        import pandas as pd
+        import json
+        from src.core.cohere_query_handler_simple import query_academic_data_with_cohere
+        
+        # Load batch data for context
+        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+        
+        if not batch_metadata_file.exists():
+            return {
+                "response": "No processed data available yet. Please upload and process documents first.",
+                "timestamp": datetime.now().isoformat(),
+                "query": query
+            }
+        
+        with open(batch_metadata_file, 'r') as f:
+            metadata = json.load(f)
+        
+        # Determine which batch to use
+        if batch_filename:
+            # Use specific batch
+            target_batch = batch_filename
+        else:
+            # Use latest batch
+            target_batch = metadata.get('current_batch')
+        
+        if not target_batch:
+            return {
+                "response": "No batch data found. Please process documents first.",
+                "timestamp": datetime.now().isoformat(),
+                "query": query
+            }
+        
+        batch_file = EXCEL_DIR / target_batch
+        
+        if not batch_file.exists():
+            return {
+                "response": f"Batch file '{target_batch}' not found.",
+                "timestamp": datetime.now().isoformat(),
+                "query": query
+            }
+        
+        # Read student data
+        df = pd.read_excel(batch_file, sheet_name='Student Data')
+        
+        # Use Cohere to query the data
+        result = query_academic_data_with_cohere(
+            question=query,
+            df=df,
+            batch_name=target_batch
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"AI Query error: {e}", exc_info=True)
+        return {
+            "error": str(e),
+            "response": f"Sorry, I encountered an error: {str(e)}. Please try again.",
+            "timestamp": datetime.now().isoformat()
+        }
 
 # Development server
 if __name__ == "__main__":

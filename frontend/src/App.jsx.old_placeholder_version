@@ -1,0 +1,661 @@
+/**
+ * UOH Academic Evaluation System - ENHANCED VERSION
+ * Complete Examination & Assessment Platform
+ * 
+ * FEATURES:
+ * 1. Homepage: Upload & Process (Documents + Exam Answers)
+ * 2. Results: Custom Search & Filtering
+ * 3. Dashboard: Data Visualization  
+ * 4. AI Query: Faculty Chat Interface
+ * 5. Settings: Admin Panel
+ * 
+ * LAST UPDATED: 2026-01-24
+ * RESPONSIVE: Mobile, Tablet, Laptop, Desktop
+ */
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { 
+  Upload, Download, Check, X, FileText, Users, TrendingUp,
+  AlertCircle, Loader, Trash2, RefreshCw, Search, Filter,
+  BarChart3, PieChart, LineChart, MessageSquare, Settings as SettingsIcon,
+  Home, FileSpreadsheet, Menu, LogOut, Edit, Save
+} from 'lucide-react'
+import AIQueryPage from './components/AIQueryPage'
+import ResultsPage from './components/ResultsPage'
+
+// API Configuration
+const API_URL = import.meta.env.PROD 
+  ? 'https://uoh-academic-backend.onrender.com'
+  : 'http://localhost:8000'
+
+function App() {
+  // Navigation State
+  const [currentPage, setCurrentPage] = useState('homepage') // 'homepage', 'results', 'dashboard', 'ai-query', 'settings'
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  
+  // Existing State
+  const [files, setFiles] = useState([])
+  const [uploading, setUploading] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+  const [systemStatus, setSystemStatus] = useState(null)
+  const [documentCount, setDocumentCount] = useState(0)
+  const [batches, setBatches] = useState([])
+  const [showBatches, setShowBatches] = useState(false)
+
+  // New State for Enhanced Features
+  const [examAnswers, setExamAnswers] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterOptions, setFilterOptions] = useState({})
+  const [dashboardData, setDashboardData] = useState(null)
+  const [chatMessages, setChatMessages] = useState([])
+  const [chatInput, setChatInput] = useState('')
+  
+  // Check system status on load
+  useEffect(() => {
+    checkSystemStatus()
+    checkDocumentCount()
+    fetchBatches()
+  }, [])
+
+  // Existing Functions
+  const checkSystemStatus = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/status`)
+      setSystemStatus(response.data)
+    } catch (error) {
+      console.error('Failed to fetch status:', error)
+    }
+  }
+
+  const checkDocumentCount = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/documents/count`)
+      setDocumentCount(response.data.count)
+    } catch (error) {
+      console.error('Failed to fetch document count:', error)
+    }
+  }
+
+  const fetchBatches = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/batches`)
+      setBatches(response.data.batches || [])
+    } catch (error) {
+      console.error('Failed to fetch batches:', error)
+    }
+  }
+
+  const handleUpload = async (e) => {
+    const selectedFiles = Array.from(e.target.files)
+    
+    if (selectedFiles.length === 0) return
+
+    const invalidFiles = selectedFiles.filter(f => !f.name.endsWith('.pdf'))
+    if (invalidFiles.length > 0) {
+      setError('Only PDF files are allowed')
+      return
+    }
+
+    const formData = new FormData()
+    selectedFiles.forEach(file => formData.append('files', file))
+
+    setUploading(true)
+    setError(null)
+
+    try {
+      const response = await axios.post(`${API_URL}/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      
+      setFiles(selectedFiles)
+      await checkDocumentCount()
+      alert(`✅ Successfully uploaded ${selectedFiles.length} files`)
+    } catch (error) {
+      setError('Upload failed: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleProcess = async () => {
+    if (documentCount === 0) {
+      setError('No documents to process. Please upload PDFs first.')
+      return
+    }
+
+    setProcessing(true)
+    setError(null)
+
+    try {
+      const response = await axios.post(`${API_URL}/process`, null, {
+        params: { batch_name: `batch_${new Date().toISOString().split('T')[0]}` }
+      })
+      
+      setResult(response.data.result)
+      setFiles([])
+      await checkDocumentCount()
+      await fetchBatches()
+      alert(`✅ Processing complete! ${response.data.result.successful}/${response.data.result.total_documents} documents processed successfully`)
+    } catch (error) {
+      setError('Processing failed: ' + (error.response?.data?.detail || error.message))
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const handleDownload = async (batchId) => {
+    try {
+      const url = `${API_URL}/batches/${batchId}/download`
+      window.open(url, '_blank')
+    } catch (error) {
+      setError('Download failed: ' + error.message)
+    }
+  }
+
+  const handleClear = async () => {
+    if (!confirm('Clear all uploaded documents?')) return
+
+    try {
+      await axios.delete(`${API_URL}/documents`)
+      setFiles([])
+      setDocumentCount(0)
+      alert('✅ All documents cleared')
+    } catch (error) {
+      setError('Failed to clear documents')
+    }
+  }
+
+  const handleReset = () => {
+    setFiles([])
+    setResult(null)
+    setError(null)
+    checkDocumentCount()
+  }
+
+  // Sidebar Navigation Component
+  const Sidebar = () => (
+    <div className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gradient-to-b from-indigo-900 to-indigo-800 min-h-screen transition-all duration-300 flex flex-col`}>
+      {/* Logo/Header */}
+      <div className="p-6 border-b border-indigo-700">
+        {sidebarOpen ? (
+          <h2 className="text-white font-bold text-xl">G.T.M</h2>
+        ) : (
+          <div className="text-white font-bold text-center">GT</div>
+        )}
+      </div>
+
+      {/* Navigation Items */}
+      <nav className="flex-1 py-6">
+        <NavItem
+          icon={<Home size={20} />}
+          label="Homepage"
+          active={currentPage === 'homepage'}
+          onClick={() => setCurrentPage('homepage')}
+        />
+        <NavItem
+          icon={<FileSpreadsheet size={20} />}
+          label="Results"
+          active={currentPage === 'results'}
+          onClick={() => setCurrentPage('results')}
+        />
+        <NavItem
+          icon={<BarChart3 size={20} />}
+          label="Dashboard"
+          active={currentPage === 'dashboard'}
+          onClick={() => setCurrentPage('dashboard')}
+        />
+        <NavItem
+          icon={<MessageSquare size={20} />}
+          label="AI Query"
+          active={currentPage === 'ai-query'}
+          onClick={() => setCurrentPage('ai-query')}
+        />
+        <NavItem
+          icon={<SettingsIcon size={20} />}
+          label="Settings"
+          active={currentPage === 'settings'}
+          onClick={() => setCurrentPage('settings')}
+        />
+      </nav>
+
+      {/* Toggle Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="p-4 text-white hover:bg-indigo-700 transition-colors"
+      >
+        <Menu size={20} />
+      </button>
+    </div>
+  )
+
+  // Navigation Item Component
+  const NavItem = ({ icon, label, active, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`w-full px-6 py-3 flex items-center gap-3 transition-colors ${
+        active 
+          ? 'bg-indigo-700 text-white border-l-4 border-white' 
+          : 'text-indigo-200 hover:bg-indigo-700/50'
+      }`}
+    >
+      {icon}
+      {sidebarOpen && <span className="font-medium">{label}</span>}
+    </button>
+  )
+
+  // Render different pages based on currentPage state
+  const renderPage = () => {
+    switch(currentPage) {
+      case 'homepage':
+        return <HomepagePage />
+      case 'results':
+        return <ResultsPage />
+      case 'dashboard':
+        return <DashboardPage />
+      case 'ai-query':
+        return <AIQueryPage />
+      case 'settings':
+        return <SettingsPage />
+      default:
+        return <HomepagePage />
+    }
+  }
+
+  // Homepage Component (Enhanced)
+  const HomepagePage = () => (
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">Welcome to G.T.M</h1>
+      <p className="text-gray-600">AI-powered document processing and exam evaluation for University of Hyderabad</p>
+
+      {/* System Status */}
+      {systemStatus && (
+        <div className="flex gap-3">
+          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+            systemStatus.llm_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            LLM: {systemStatus.llm_provider || 'Offline'}
+          </span>
+          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+            systemStatus.supabase_available ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+          }`}>
+            DB: {systemStatus.supabase_available ? 'Connected' : 'Offline'}
+          </span>
+        </div>
+      )}
+
+      {/* Error Alert */}
+      {error && (
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-3" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">Error</p>
+              <p className="text-sm text-red-700 mt-1">{error}</p>
+            </div>
+            <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Documents in Queue</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{documentCount}</p>
+            </div>
+            <FileText className="h-12 w-12 text-blue-500 opacity-80" />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Batches</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{batches.length}</p>
+            </div>
+            <Users className="h-12 w-12 text-green-500 opacity-80" />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">System Status</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">
+                {systemStatus?.status === 'operational' ? '✅ Ready' : '⚠️ Check'}
+              </p>
+            </div>
+            <TrendingUp className="h-12 w-12 text-purple-500 opacity-80" />
+          </div>
+        </div>
+      </div>
+
+      {/* Upload Section */}
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-900">Upload & Process Documents</h2>
+        
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors">
+          <Upload className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+          
+          <label className="cursor-pointer">
+            <span className="mt-2 block text-lg font-medium text-gray-900">
+              Click to upload PDF documents or exam answers
+            </span>
+            <span className="mt-1 block text-sm text-gray-500">
+              Supports: Academic reports, transcripts, exam submissions
+            </span>
+            <input
+              type="file"
+              multiple
+              accept=".pdf"
+              onChange={handleUpload}
+              className="hidden"
+              disabled={uploading || processing}
+            />
+          </label>
+
+          {uploading && (
+            <div className="mt-4 flex items-center justify-center">
+              <Loader className="animate-spin h-6 w-6 text-blue-600 mr-2" />
+              <span className="text-sm text-gray-600">Uploading...</span>
+            </div>
+          )}
+
+          {files.length > 0 && !uploading && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-green-600">
+                ✅ {files.length} file{files.length > 1 ? 's' : ''} uploaded successfully
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={handleProcess}
+            disabled={documentCount === 0 || processing}
+            className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+          >
+            {processing ? (
+              <>
+                <Loader className="animate-spin h-5 w-5 mr-2" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-5 w-5 mr-2" />
+                Process Documents ({documentCount})
+              </>
+            )}
+          </button>
+
+          {documentCount > 0 && (
+            <button
+              onClick={handleClear}
+              disabled={processing}
+              className="bg-red-50 text-red-600 py-3 px-6 rounded-lg font-semibold hover:bg-red-100 disabled:opacity-50 flex items-center justify-center transition-colors"
+            >
+              <Trash2 className="h-5 w-5 mr-2" />
+              Clear All
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Results Display (if available) */}
+      {result && (
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Processing Results</h2>
+            <button
+              onClick={handleReset}
+              className="bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-200 flex items-center"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Process More
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-4xl font-bold text-blue-600">{result.total_documents}</p>
+              <p className="text-sm text-gray-600 mt-1">Total Documents</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-4xl font-bold text-green-600">{result.successful}</p>
+              <p className="text-sm text-gray-600 mt-1">Successful</p>
+            </div>
+            <div className="text-center p-4 bg-red-50 rounded-lg">
+              <p className="text-4xl font-bold text-red-600">{result.failed}</p>
+              <p className="text-sm text-gray-600 mt-1">Failed</p>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <p className="text-4xl font-bold text-purple-600">{result.success_rate.toFixed(1)}%</p>
+              <p className="text-sm text-gray-600 mt-1">Success Rate</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => handleDownload(result.batch_id)}
+            className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center transition-colors"
+          >
+            <Download className="mr-2 h-5 w-5" />
+            Download Excel Report
+          </button>
+        </div>
+      )}
+    </div>
+  )
+
+  // Results Page (New)
+  const ResultsPage = () => (
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">Search Results</h1>
+      
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="flex gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search by student name, roll number, batch..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 flex items-center gap-2">
+            <Filter size={20} />
+            Filter
+          </button>
+        </div>
+      </div>
+
+      {/* Coming Soon Message */}
+      <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+        <FileSpreadsheet className="mx-auto h-24 w-24 text-gray-300 mb-4" />
+        <h2 className="text-2xl font-semibold text-gray-700 mb-2">Results Search Coming Soon</h2>
+        <p className="text-gray-500">
+          Advanced search and filtering capabilities will be available here.
+          Search by batch, semester, project category, and more.
+        </p>
+      </div>
+    </div>
+  )
+
+  // Dashboard Page (New)
+  const DashboardPage = () => (
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+      
+      {/* Dashboard Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Placeholder Charts */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <BarChart3 className="text-blue-600" />
+            CGPA Distribution
+          </h3>
+          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <p className="text-gray-500">Chart visualization coming soon</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <PieChart className="text-green-600" />
+            Department Distribution
+          </h3>
+          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <p className="text-gray-500">Chart visualization coming soon</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <LineChart className="text-purple-600" />
+            Performance Trends
+          </h3>
+          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <p className="text-gray-500">Chart visualization coming soon</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <TrendingUp className="text-orange-600" />
+            Top Performers
+          </h3>
+          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+            <p className="text-gray-500">Leaderboard coming soon</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  // AI Query Page (New)
+  const AIQueryPage = () => (
+    <div className="p-6 h-full flex flex-col">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">AI Query Assistant</h1>
+      
+      <div className="flex-1 bg-white rounded-xl shadow-lg flex flex-col overflow-hidden">
+        {/* Chat Messages Area */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          {chatMessages.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center">
+              <MessageSquare className="h-24 w-24 text-gray-300 mb-4" />
+              <h2 className="text-2xl font-semibold text-gray-700 mb-2">Ask Your Query Here</h2>
+              <p className="text-gray-500 max-w-md">
+                Ask questions about student performance, analyze exam answers, 
+                or get insights from academic data using AI.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {chatMessages.map((msg, idx) => (
+                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-2xl p-4 rounded-lg ${
+                    msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                  }`}>
+                    <p>{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Chat Input Area */}
+        <div className="border-t border-gray-200 p-4">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Type your question here..."
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  // Handle send message
+                  if (chatInput.trim()) {
+                    setChatMessages([...chatMessages, { role: 'user', content: chatInput }])
+                    setChatInput('')
+                  }
+                }
+              }}
+            />
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+              Ask it
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  // Settings Page (New)
+  const SettingsPage = () => (
+    <div className="p-8 space-y-8 max-w-4xl mx-auto">
+      <h1 className="text-4xl font-bold text-gray-900">Settings</h1>
+      
+      <div className="bg-white rounded-2xl shadow-xl p-8 space-y-8">
+        <div>
+          <h3 className="text-2xl font-semibold mb-4 flex items-center gap-3">
+            <Users className="text-blue-600" />
+            User Management
+          </h3>
+          <button className="bg-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-red-700 flex items-center gap-3">
+            <LogOut size={22} />
+            Logout
+          </button>
+        </div>
+
+        <div className="pt-6 border-t-2">
+          <h3 className="text-2xl font-semibold mb-4 flex items-center gap-3">
+            <Edit className="text-green-600" />
+            Data Management
+          </h3>
+          <p className="text-gray-600 mb-4 text-lg">
+            Edit and manage student records, batch information, and system configuration.
+          </p>
+          <button className="bg-green-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-green-700 flex items-center gap-3">
+            <Save size={22} />
+            Save Changes
+          </button>
+        </div>
+
+        <div className="pt-6 border-t-2">
+          <h3 className="text-2xl font-semibold mb-4 flex items-center gap-3">
+            <SettingsIcon className="text-purple-600" />
+            System Configuration
+          </h3>
+          <p className="text-gray-600 text-lg">
+            Advanced settings and configuration options.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+
+  // MAIN RENDER
+
+  return (
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <Sidebar />
+      <div className="flex-1 overflow-y-auto">
+        {renderPage()}
+      </div>
+    </div>
+  )
+}
+
+export default App
