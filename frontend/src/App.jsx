@@ -3,6 +3,7 @@ import axios from 'axios'
 import { Upload, Download, X, FileText, Users, TrendingUp, AlertCircle, Loader, Trash2, RefreshCw, BarChart3, Home, FileSpreadsheet, MessageSquare, Settings as SettingsIcon, Menu, LogOut, Edit, Save, Award, GraduationCap } from 'lucide-react'
 import AIQueryPage from './components/AIQueryPage'
 import ResultsPage from './components/ResultsPage'
+import AcademicAlerts from './components/AcademicAlerts'
 
 const API_URL = 'http://localhost:8000'
 
@@ -205,6 +206,9 @@ export default function App() {
       <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
       {loadingDashboard ? <div className="flex items-center justify-center h-64"><Loader className="animate-spin h-12 w-12 text-blue-600" /></div> : dashboardData ? (
         <>
+          {/* Academic Alerts Section - NEW */}
+          <AcademicAlerts />
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl shadow-lg p-6"><div className="flex items-center justify-between mb-4"><h3 className="text-lg font-semibold">Total Students</h3><Users className="h-8 w-8 text-blue-600" /></div><p className="text-4xl font-bold">{dashboardData.total_students}</p></div>
             <div className="bg-white rounded-xl shadow-lg p-6"><div className="flex items-center justify-between mb-4"><h3 className="text-lg font-semibold">Average CGPA</h3><GraduationCap className="h-8 w-8 text-green-600" /></div><p className="text-4xl font-bold">{dashboardData.average_cgpa}</p></div>

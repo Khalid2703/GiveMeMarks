@@ -13,6 +13,7 @@ from typing import List, Optional
 from datetime import datetime
 import uuid
 import shutil
+import numpy as np
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -507,12 +508,27 @@ async def get_dashboard_stats():
             reverse=True
         )[:10]
         
-        top_performers = [{
-            'name': s.get('Student Name', 'N/A'),
-            'roll_number': s.get('Roll Number', 'N/A'),
-            'department': s.get('Department', 'N/A'),
-            'cgpa': round(float(s.get('CGPA', 0)), 2) if pd.notna(s.get('CGPA')) else 0
-        } for s in top_students]
+        top_performers = []
+        for s in top_students:
+            try:
+                cgpa_raw = s.get('CGPA')
+                if pd.notna(cgpa_raw):
+                    cgpa_float = float(cgpa_raw)
+                    if not (pd.isna(cgpa_float) or cgpa_float == float('inf') or cgpa_float == float('-inf')):
+                        cgpa_val = round(cgpa_float, 2)
+                    else:
+                        cgpa_val = 0
+                else:
+                    cgpa_val = 0
+            except (ValueError, TypeError):
+                cgpa_val = 0
+            
+            top_performers.append({
+                'name': s.get('Student Name', 'N/A'),
+                'roll_number': s.get('Roll Number', 'N/A'),
+                'department': s.get('Department', 'N/A'),
+                'cgpa': cgpa_val
+            })
         
         avg_cgpa = round(sum(cgpa_values) / len(cgpa_values), 2) if cgpa_values else 0
         
@@ -532,17 +548,85 @@ async def get_dashboard_stats():
         return {"error": str(e), "total_students": 0}
 
 
+@app.get("/api/dashboard/alerts")
+async def get_academic_alerts(batches: str = ""):
+    """
+    Get academic alerts and recommendations for faculty
+    Supports filtering by specific batches via query parameter
+    Example: /api/dashboard/alerts?batches=batch1.xlsx,batch2.xlsx
+    """
+    try:
+        import pandas as pd
+        import json
+        from src.core.academic_alerts import AcademicAlertsGenerator
+        
+        # Read batch metadata
+        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+        if not batch_metadata_file.exists():
+            return {"alerts": []}
+        
+        with open(batch_metadata_file, 'r') as f:
+            metadata = json.load(f)
+        
+        all_batches = metadata.get('batches', [])
+        if not all_batches:
+            return {"alerts": []}
+        
+        # Parse selected batches from query parameter
+        selected_batch_filenames = []
+        if batches:
+            selected_batch_filenames = [b.strip() for b in batches.split(',') if b.strip()]
+            logger.info(f"Filtering alerts for {len(selected_batch_filenames)} selected batches")
+        else:
+            # If no batches specified, use all batches
+            selected_batch_filenames = [b.get('filename') for b in all_batches if b.get('filename')]
+            logger.info(f"Using all {len(selected_batch_filenames)} batches for alerts")
+        
+        # Read and combine selected batch files
+        all_dfs = []
+        for batch_filename in selected_batch_filenames:
+            batch_path = EXCEL_DIR / batch_filename
+            if batch_path.exists():
+                try:
+                    df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
+                    all_dfs.append(df_temp)
+                    logger.info(f"Loaded {len(df_temp)} students from {batch_filename} for alerts")
+                except Exception as e:
+                    logger.warning(f"Failed to read {batch_filename}: {e}")
+        
+        if not all_dfs:
+            logger.warning("No batch data available for alerts")
+            return {"alerts": []}
+        
+        # Combine all dataframes
+        df = pd.concat(all_dfs, ignore_index=True)
+        
+        # Remove duplicates
+        df = df.drop_duplicates(subset=['Roll Number'], keep='last')
+        
+        # Generate alerts
+        alerts = AcademicAlertsGenerator.generate_alerts(df)
+        
+        logger.info(f"Generated {len(alerts)} alerts for {len(selected_batch_filenames)} batch(es)")
+        
+        return {"alerts": alerts, "total": len(alerts), "batches_analyzed": len(selected_batch_filenames)}
+        
+    except Exception as e:
+        logger.error(f"Error generating alerts: {e}", exc_info=True)
+        return {"alerts": [], "error": str(e)}
+
+
 @app.get("/api/search/students")
 async def search_students(query: str = "", department: str = "", min_cgpa: float = 0.0, max_cgpa: float = 10.0):
     """
-    Search students with filters
+    Search students with filters - searches ALL BATCHES
     Query params: query (name/roll), department, min_cgpa, max_cgpa
     """
     try:
         import pandas as pd
         import json
         
-        # Read the latest batch file
+        # Read batch metadata
         batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
         if not batch_metadata_file.exists():
             return {"results": [], "count": 0}
@@ -550,18 +634,35 @@ async def search_students(query: str = "", department: str = "", min_cgpa: float
         with open(batch_metadata_file, 'r') as f:
             metadata = json.load(f)
         
-        current_batch = metadata.get('current_batch')
-        if not current_batch:
+        batches = metadata.get('batches', [])
+        if not batches:
             return {"results": [], "count": 0}
         
-        batch_file = EXCEL_DIR / current_batch
-        if not batch_file.exists():
+        logger.info(f"Searching across {len(batches)} batches with query: '{query}'")
+        
+        # Read and combine ALL batch files
+        all_dfs = []
+        for batch in batches:
+            batch_filename = batch.get('filename')
+            if batch_filename:
+                batch_path = EXCEL_DIR / batch_filename
+                if batch_path.exists():
+                    try:
+                        df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
+                        all_dfs.append(df_temp)
+                    except Exception as e:
+                        logger.warning(f"Failed to read {batch_filename}: {e}")
+        
+        if not all_dfs:
             return {"results": [], "count": 0}
         
-        logger.info(f"Searching students with query: '{query}'")
+        # Combine all dataframes
+        df = pd.concat(all_dfs, ignore_index=True)
         
-        # Read Excel data
-        df = pd.read_excel(batch_file, sheet_name='Student Data')
+        # Remove duplicates based on Roll Number (keep latest)
+        df = df.drop_duplicates(subset=['Roll Number'], keep='last')
+        
+        logger.info(f"Total unique students: {len(df)}")
         
         # Apply filters
         if query:
@@ -580,13 +681,36 @@ async def search_students(query: str = "", department: str = "", min_cgpa: float
         # Convert to list of dicts and format
         results = []
         for _, row in df.iterrows():
+            # Safely handle CGPA conversion
+            cgpa_value = 0
+            try:
+                cgpa_raw = row.get('CGPA')
+                if pd.notna(cgpa_raw):
+                    cgpa_float = float(cgpa_raw)
+                    # Check if CGPA is a valid number (not NaN, not Infinity)
+                    if not (pd.isna(cgpa_float) or cgpa_float == float('inf') or cgpa_float == float('-inf')):
+                        cgpa_value = round(cgpa_float, 2)
+            except (ValueError, TypeError):
+                cgpa_value = 0
+            
+            # Sanitize ALL fields to prevent JSON serialization errors
+            def sanitize_value(val):
+                """Convert any value to JSON-safe format"""
+                if pd.isna(val):
+                    return 'N/A'
+                if isinstance(val, (int, float, np.number)):
+                    if pd.isna(val) or val == float('inf') or val == float('-inf'):
+                        return 'N/A'
+                    return val
+                return str(val) if val is not None else 'N/A'
+            
             results.append({
-                "name": row.get('Student Name', 'N/A'),
-                "roll_number": row.get('Roll Number', 'N/A'),
-                "department": row.get('Department', 'N/A'),
-                "cgpa": round(float(row.get('CGPA', 0)), 2) if pd.notna(row.get('CGPA')) else 0,
-                "email": row.get('Email', 'N/A'),
-                "semester": row.get('Semester', 'N/A')
+                "name": sanitize_value(row.get('Student Name')),
+                "roll_number": sanitize_value(row.get('Roll Number')),
+                "department": sanitize_value(row.get('Department')),
+                "cgpa": cgpa_value,
+                "email": sanitize_value(row.get('Email')),
+                "semester": sanitize_value(row.get('Semester'))
             })
         
         logger.info(f"Found {len(results)} matching students")
