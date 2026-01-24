@@ -1,0 +1,205 @@
+╔═══════════════════════════════════════════════════════════════╗
+║           UNIVERSITY OF HYDERABAD                             ║
+║        STUDENT REGISTRATION & PROFILE                         ║
+║            ACADEMIC YEAR 2024-25                              ║
+╚═══════════════════════════════════════════════════════════════╝
+
+SECTION A: PERSONAL INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Student Name (as per records) : Karthik Reddy Bommareddy
+Roll Number                   : 21ME4072
+University Email              : karthik.reddy@uohyd.ac.in
+Personal Email                : karthik.b72@gmail.com
+Mobile Number                 : +91-9876012345
+Alternative Contact           : +91-8765432109
+
+Date of Birth                 : 18-07-2003
+Age                          : 21 years
+Gender                       : Male
+Blood Group                  : O+ Positive
+Category                     : General
+Nationality                  : Indian
+State of Domicile            : Telangana
+
+SECTION B: ACADEMIC INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+School/Department            : School of Engineering Sciences
+Program Enrolled             : B.Tech Mechanical Engineering
+Specialization               : Robotics & Automation
+Year of Admission            : 2021
+Current Semester             : VI
+Expected Year of Completion  : 2025
+
+Academic Performance Summary
+─────────────────────────────────────────────────────────────────
+Current CGPA                 : 8.35
+Current SGPA (Sem VI)        : 8.62
+Total Credits Earned         : 125/160
+Credits in Progress          : 20
+Overall Attendance           : 85.8%
+Academic Standing            : Good Standing
+
+SECTION C: CURRENT SEMESTER ENROLLMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Semester VI - Spring 2024-25
+
+┌────────┬────────────────────────────────┬─────────┬──────────┐
+│ Code   │ Course Title                   │ Credits │ Status   │
+├────────┼────────────────────────────────┼─────────┼──────────┤
+│ ME601  │ Machine Design                 │    4    │ Enrolled │
+│ ME602  │ Heat Transfer                  │    4    │ Enrolled │
+│ ME603  │ Robotics & Automation          │    3    │ Enrolled │
+│ ME604  │ Finite Element Analysis        │    3    │ Enrolled │
+│ ME605L │ CAD/CAM Lab                    │    2    │ Enrolled │
+│ ME606  │ Industrial Engineering         │    3    │ Enrolled │
+│ EE601  │ Control Systems (Elective)     │    3    │ Enrolled │
+└────────┴────────────────────────────────┴─────────┴──────────┘
+
+Total Credits: 22
+
+SECTION D: PREVIOUS ACADEMIC QUALIFICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Class XII (Intermediate/+2)
+Board                        : Telangana State Board
+Year of Passing              : 2021
+Percentage/Grade             : 96.5%
+Subjects                     : Physics, Chemistry, Mathematics
+School Name                  : Sri Chaitanya Junior College, Hyderabad
+
+Class X (SSC/10th)
+Board                        : Telangana State Board
+Year of Passing              : 2019
+Percentage/Grade             : 10.0 GPA
+School Name                  : Kendriya Vidyalaya, Hyderabad
+
+SECTION E: FAMILY DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Father's Name                : B. Ramesh Reddy
+Father's Occupation          : Civil Engineer (Government)
+Father's Contact             : +91-9848123456
+
+Mother's Name                : B. Lakshmi Reddy
+Mother's Occupation          : School Teacher
+Mother's Contact             : +91-9848654321
+
+Emergency Contact Person     : B. Ramesh Reddy (Father)
+Emergency Contact Number     : +91-9848123456
+
+Annual Family Income         : ₹8,50,000
+Economic Category            : General
+
+SECTION F: RESIDENTIAL INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Current Accommodation Type   : University Hostel
+Hostel Name                  : North Campus Men's Hostel - Block C
+Room Number                  : C-312
+Hostel Warden Contact        : +91-40-23134567
+
+Permanent Address:
+H.No. 8-2-293/82/A/518
+Road No. 36, Jubilee Hills
+Hyderabad, Telangana - 500033
+India
+
+SECTION G: FINANCIAL ASSISTANCE & SCHOLARSHIPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Scholarship Name             : Merit Scholarship
+Amount                       : ₹30,000 per year
+Duration                     : 2021-2025
+Status                       : Active
+
+Loan Details                 : Education Loan from SBI
+Loan Amount                  : ₹5,00,000
+Status                       : Active
+
+SECTION H: EXTRA-CURRICULAR ACTIVITIES & ACHIEVEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Technical Activities:
+• Member, Robotics Club (2021-Present)
+• Coordinator, SAE India Collegiate Club
+• Participant, Smart India Hackathon 2023
+• Winner, Inter-College CAD Design Competition 2024
+
+Sports:
+• University Cricket Team Member
+• Bronze Medal, Inter-University Sports Meet (Cricket)
+
+Leadership:
+• Class Representative (Semester V-VI)
+• Volunteer, National Service Scheme (NSS)
+
+SECTION I: TECHNICAL SKILLS & CERTIFICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAD/CAM Software:
+• AutoCAD 2D/3D (Advanced)
+• SolidWorks (Certified)
+• CATIA V5
+• ANSYS (Basic)
+
+Programming:
+• Python (Intermediate)
+• MATLAB (Advanced)
+• C++ (Basic)
+
+Certifications:
+• SolidWorks Associate Certificate (CSWA)
+• Python for Engineers (Coursera - IIT Bombay)
+• Industrial Safety Training Certificate
+• AutoCAD Professional Certificate
+
+SECTION J: INTERNSHIPS & INDUSTRIAL TRAINING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Summer Internship 2023
+Company                      : Bharat Heavy Electricals Limited (BHEL)
+Location                     : Hyderabad
+Duration                     : 8 weeks (May-June 2023)
+Department                   : Manufacturing Division
+Stipend                      : ₹10,000 per month
+
+Winter Internship 2023-24
+Company                      : Tata Motors
+Location                     : Pune
+Duration                     : 6 weeks (Dec 2023 - Jan 2024)
+Department                   : R&D - Automotive Design
+Stipend                      : ₹15,000 per month
+
+SECTION K: CAREER ASPIRATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Preferred Career Path        : Automotive Design Engineer
+Industry Interest            : Automotive, Aerospace, Robotics
+Higher Education Plans       : M.Tech in Robotics (IIT/Abroad)
+Companies of Interest        : Tesla, ISRO, Mahindra, Tata Motors
+
+SECTION L: DISCIPLINARY RECORD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Disciplinary Status          : Clear (No violations)
+Conduct Grade                : Excellent
+
+SECTION M: HEALTH INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Medical Fitness              : Fit
+Known Allergies              : None
+Chronic Conditions           : None
+Vaccination Status           : Complete (COVID-19 Fully Vaccinated)
+Health Insurance             : Covered under University Health Scheme
+
+SECTION N: REMARKS & SPECIAL NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Consistent academic performer with strong practical skills
+• Active participant in technical and sports activities
+• Recommended for placement in core mechanical companies
+• Eligible for campus placements (CGPA > 6.5 requirement met)
+
+╔═══════════════════════════════════════════════════════════════╗
+║ DOCUMENT AUTHENTICATION                                      ║
+║                                                               ║
+║ This profile is auto-generated from the university database  ║
+║ Registration Date: 15-August-2021                            ║
+║ Last Updated: 24-January-2026                                ║
+║                                                               ║
+║ For verification, scan QR code or visit:                     ║
+║ https://uohyd.ac.in/verify/21ME4072                          ║
+║                                                               ║
+║ Issued by: Academic Section                                  ║
+║ University of Hyderabad                                       ║
+╚═══════════════════════════════════════════════════════════════╝

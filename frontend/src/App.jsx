@@ -410,88 +410,167 @@ function App() {
               </button>
             </div>
 
+            {/* Documents Status Summary */}
+            {result.documents && result.documents.length > 0 && (
+              <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+                <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900">
+                  Document Processing Status ({result.documents.length})
+                </h3>
+                
+                <div className="space-y-2">
+                  {result.documents.map((doc, idx) => (
+                    <div 
+                      key={idx}
+                      className={`p-3 rounded-lg border-l-4 ${
+                        doc.document_status === 'COMPLETE' 
+                          ? 'bg-green-50 border-green-500'
+                          : doc.document_status === 'PARTIAL'
+                          ? 'bg-yellow-50 border-yellow-500'
+                          : doc.document_status === 'INCOMPLETE_IDENTITY'
+                          ? 'bg-orange-50 border-orange-500'
+                          : doc.document_status === 'PROCESSING_ERROR'
+                          ? 'bg-red-50 border-red-500'
+                          : 'bg-gray-50 border-gray-500'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900 text-sm sm:text-base">
+                            {doc.filename}
+                          </p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                              doc.document_status === 'COMPLETE'
+                                ? 'bg-green-100 text-green-800'
+                                : doc.document_status === 'PARTIAL'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : doc.document_status === 'INCOMPLETE_IDENTITY'
+                                ? 'bg-orange-100 text-orange-800'
+                                : doc.document_status === 'PROCESSING_ERROR'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {doc.document_status}
+                            </span>
+                            {doc.has_identity && (
+                              <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                                Has Identity
+                              </span>
+                            )}
+                            {doc.has_academic_data && (
+                              <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800">
+                                Has Academic Data
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {doc.error && (
+                          <p className="text-xs text-red-600 mt-2 sm:mt-0 sm:ml-4">
+                            {doc.error}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Students Table */}
             <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
               <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900">
-                Processed Students ({result.students.length})
+                Students with Identity ({result.students.length})
               </h3>
               
-              {/* Mobile Cards View */}
-              <div className="block sm:hidden space-y-4">
-                {result.students.map((student, idx) => (
-                  <div key={idx} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <div className="font-semibold text-gray-900 mb-2">
-                      {student.student_name}
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Roll Number:</span>
-                        <span className="font-medium">{student.roll_number}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Department:</span>
-                        <span className="font-medium">{student.department}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">CGPA:</span>
-                        <span className="font-medium text-blue-600">{student.cgpa}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Email:</span>
-                        <span className="font-medium text-xs truncate max-w-[180px]">
-                          {student.email}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Desktop Table View */}
-              <div className="hidden sm:block overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Student Name
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Roll Number
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Department
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        CGPA
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+              {result.students.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-sm">
+                    No documents contained student identity information.
+                  </p>
+                  <p className="text-xs mt-2">
+                    All documents were processed successfully. Check the Document Processing Status above for details.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Mobile Cards View */}
+                  <div className="block sm:hidden space-y-4">
                     {result.students.map((student, idx) => (
-                      <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      <div key={idx} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div className="font-semibold text-gray-900 mb-2">
                           {student.student_name}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {student.roll_number}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {student.department}
-                        </td>
-                        <td className="px-4 py-3 text-sm font-semibold text-blue-600">
-                          {student.cgpa}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600 truncate max-w-xs">
-                          {student.email}
-                        </td>
-                      </tr>
+                        </div>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Roll Number:</span>
+                            <span className="font-medium">{student.roll_number}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Department:</span>
+                            <span className="font-medium">{student.department}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">CGPA:</span>
+                            <span className="font-medium text-blue-600">{student.cgpa}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Email:</span>
+                            <span className="font-medium text-xs truncate max-w-[180px]">
+                              {student.email}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden sm:block overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Student Name
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Roll Number
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Department
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            CGPA
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Email
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {result.students.map((student, idx) => (
+                          <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                              {student.student_name}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {student.roll_number}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {student.department}
+                            </td>
+                            <td className="px-4 py-3 text-sm font-semibold text-blue-600">
+                              {student.cgpa}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600 truncate max-w-xs">
+                              {student.email}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

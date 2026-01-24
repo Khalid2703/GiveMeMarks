@@ -69,28 +69,48 @@ class SupabaseClient:
             Dictionary with 'success', 'id', and optional 'error' keys
         """
         try:
-            # Prepare student record
+            # Helper function to convert None/empty to None (not empty string)
+            def db_value(v):
+                if v in [None, '', 'N/A']:
+                    return None
+                return v
+            
+            # Helper function for numeric fields
+            def db_number(v):
+                if v in [None, '', 'N/A']:
+                    return None
+                try:
+                    return float(v)
+                except (ValueError, TypeError):
+                    return None
+            
+            # Prepare student record (use None instead of empty strings)
             record = {
-                'student_name': student_data.get('Student Name', ''),
-                'roll_number': student_data.get('Roll Number', ''),
-                'email': student_data.get('Email', ''),
-                'phone': student_data.get('Phone', ''),
-                'department': student_data.get('Department', ''),
-                'program': student_data.get('Program', ''),
-                'semester': student_data.get('Semester', ''),
-                'academic_year': student_data.get('Academic Year', ''),
-                'cgpa': student_data.get('CGPA', ''),
-                'sgpa': student_data.get('SGPA', ''),
-                'attendance_percentage': student_data.get('Attendance Percentage', ''),
-                'dob': student_data.get('Date of Birth') or None,
-                'gender': student_data.get('Gender', ''),
-                'category': student_data.get('Category', ''),
-                'awards_and_honors': student_data.get('Awards and Honors', ''),
-                'extracurricular_activities': student_data.get('Extracurricular Activities', ''),
-                'remarks': student_data.get('Remarks', ''),
+                'student_name': db_value(student_data.get('Student Name')),
+                'roll_number': db_value(student_data.get('Roll Number')),
+                'email': db_value(student_data.get('Email')),
+                'phone': db_value(student_data.get('Phone')),
+                'department': db_value(student_data.get('Department')),
+                'program': db_value(student_data.get('Program')),
+                'semester': db_value(student_data.get('Semester')),
+                'academic_year': db_value(student_data.get('Academic Year')),
+                'cgpa': db_number(student_data.get('CGPA')),
+                'sgpa': db_number(student_data.get('SGPA')),
+                'attendance_percentage': db_number(student_data.get('Attendance Percentage')),
+                'dob': db_value(student_data.get('Date of Birth')),
+                'gender': db_value(student_data.get('Gender')),
+                'category': db_value(student_data.get('Category')),
+                'awards_and_honors': db_value(student_data.get('Awards and Honors')),
+                'extracurricular_activities': db_value(student_data.get('Extracurricular Activities')),
+                'remarks': db_value(student_data.get('Remarks')),
                 'analysis': student_data,  # Store full data as JSONB
                 'metadata': student_data.get('_metadata', {})
             }
+            
+            # Ensure student_name is not None (required field)
+            if not record['student_name']:
+                logger.warning("Cannot insert student without name")
+                return {'success': False, 'error': 'Student name is required'}
             
             # Insert into database
             response = self.client.table('students').insert(record).execute()

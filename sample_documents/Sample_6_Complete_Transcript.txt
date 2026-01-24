@@ -1,0 +1,223 @@
+╔══════════════════════════════════════════════════════════════╗
+║         UNIVERSITY OF HYDERABAD                              ║
+║      TRANSCRIPT OF ACADEMIC RECORDS                          ║
+║         (Official Document)                                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+PERSONAL INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Name                    : Aditya Kumar Singh
+Roll Number             : 20EE5091
+Email                   : aditya.singh@uohyd.ac.in
+Phone                   : +91-9012345678
+Department              : Electrical Engineering
+Program                 : M.Tech Power Systems
+Date of Birth           : 05-09-2000
+Gender                  : Male
+Nationality             : Indian
+Category                : OBC-NCL
+
+PROGRAM DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Degree                  : Master of Technology (M.Tech)
+Specialization          : Power Systems Engineering
+Date of Admission       : July 2020
+Date of Completion      : June 2024
+Total Duration          : 4 Semesters (2 Years)
+Thesis Title            : "AI-Based Load Forecasting for Smart Grids"
+Thesis Grade            : A+ (Outstanding)
+
+GRADING SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Grade | Grade Point | Marks Range  | Description
+──────────────────────────────────────────────────────────────
+  A+  |    10      | 90-100       | Outstanding
+  A   |     9      | 80-89        | Excellent
+  A-  |     8      | 75-79        | Very Good
+  B+  |     7      | 70-74        | Good
+  B   |     6      | 60-69        | Above Average
+  C   |     5      | 50-59        | Average
+  F   |     0      | Below 50     | Fail
+
+SEMESTER I - AUTUMN 2020
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Course  | Course Name                        | Cr. | Grade | Points
+────────────────────────────────────────────────────────────────────
+EE601   | Advanced Power Systems             | 4   | A     | 36
+EE602   | High Voltage Engineering           | 4   | A+    | 40
+EE603   | Power Electronics                  | 3   | A     | 27
+EE604   | Optimization Techniques            | 3   | A-    | 24
+MA601   | Advanced Engineering Mathematics   | 3   | A     | 27
+EE605L  | Power Systems Lab                  | 2   | A+    | 20
+────────────────────────────────────────────────────────────────────
+         Semester Credits: 19              SGPA: 9.16
+
+SEMESTER II - SPRING 2021
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Course  | Course Name                        | Cr. | Grade | Points
+────────────────────────────────────────────────────────────────────
+EE606   | Smart Grid Technologies            | 4   | A+    | 40
+EE607   | Renewable Energy Systems           | 4   | A     | 36
+EE608   | FACTS Devices                      | 3   | A     | 27
+EE609   | AI in Power Systems                | 3   | A+    | 30
+CS601   | Machine Learning (Elective)        | 3   | A     | 27
+EE610L  | Renewable Energy Lab               | 2   | A+    | 20
+────────────────────────────────────────────────────────────────────
+         Semester Credits: 19              SGPA: 9.47
+
+SEMESTER III - AUTUMN 2021
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Course  | Course Name                        | Cr. | Grade | Points
+────────────────────────────────────────────────────────────────────
+EE611   | Power System Protection            | 3   | A     | 27
+EE612   | Energy Storage Systems             | 3   | A     | 27
+EE699   | M.Tech Thesis Phase I              | 12  | A     | 108
+────────────────────────────────────────────────────────────────────
+         Semester Credits: 18              SGPA: 9.00
+
+SEMESTER IV - SPRING 2022
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Course  | Course Name                        | Cr. | Grade | Points
+────────────────────────────────────────────────────────────────────
+EE799   | M.Tech Thesis Phase II             | 18  | A+    | 180
+────────────────────────────────────────────────────────────────────
+         Semester Credits: 18              SGPA: 10.00
+
+CUMULATIVE PERFORMANCE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total Credits Completed               : 74
+Total Grade Points Earned             : 696
+Cumulative GPA (CGPA)                 : 9.41
+Overall Percentage Equivalent         : 94.1%
+Final Result                          : PASS (First Class with Distinction)
+Division                              : First Class with Distinction
+
+GRADE DISTRIBUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Grade  | Count | Percentage
+───────────────────────────
+  A+   |   7   |   47%
+  A    |   9   |   60%
+  A-   |   1   |    7%
+  Total: 17 courses
+
+ATTENDANCE RECORD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Overall Attendance Percentage         : 94.5%
+Attendance Status                     : Excellent
+
+M.TECH THESIS DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Thesis Title:
+"Machine Learning Based Short-Term Load Forecasting for 
+Smart Grid Applications: A Hybrid Approach"
+
+Thesis Supervisor:
+Dr. Prakash Rao, Professor
+Department of Electrical Engineering
+
+External Examiner:
+Dr. Venkatesh Murthy, IIT Madras
+
+Thesis Defense Date: 15-May-2024
+Defense Result: Passed with Distinction
+
+Key Contributions:
+• Developed novel hybrid ML model with 97.5% accuracy
+• Reduced forecasting error by 35% compared to existing methods
+• Published 2 papers in IEEE Transactions
+• Presented at International Conference on Smart Grids (ICSG 2024)
+
+RESEARCH PUBLICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Singh, A.K., Rao, P. (2023). "Hybrid LSTM-XGBoost Model 
+   for Load Forecasting". IEEE Transactions on Power Systems. 
+   Vol 38(4), pp. 3245-3258. (IF: 6.5)
+
+2. Singh, A.K., Rao, P., Kumar, S. (2024). "AI-Driven Load 
+   Prediction for Smart Grids". International Conference on 
+   Smart Grid Technologies (ICSG), Mumbai. pp. 112-119.
+
+3. Singh, A.K. (2024). "Review of ML Techniques in Power 
+   Systems". Energy Reports. Vol 10, pp. 245-267. (IF: 5.2)
+
+ACADEMIC ACHIEVEMENTS & HONORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• University Gold Medal - Best M.Tech Student (2024)
+• Dean's Merit List - All 4 Semesters
+• IEEE Student Paper Contest Winner (2023)
+• POSOCO Power System Award (2024)
+• Travel Grant - International Conference ICSG 2024
+• Graduate Scholarship - Full Tuition Waiver
+
+PROFESSIONAL CERTIFICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• NPTEL Online Certification - Smart Grid Technologies (Elite)
+• IEEE Power & Energy Society Member
+• ETAP Software Professional Certificate
+• Python for Data Science (Coursera - Stanford University)
+• Deep Learning Specialization (Coursera - Andrew Ng)
+
+INTERNSHIPS & INDUSTRIAL EXPERIENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Summer Internship 2021
+Organization: Power Grid Corporation of India (PGCIL)
+Location: Hyderabad
+Duration: 10 weeks
+Stipend: ₹25,000/month
+Project: "Real-time Monitoring System for Substations"
+
+Winter Internship 2021-22
+Organization: ABB India Limited
+Location: Bangalore
+Duration: 8 weeks
+Stipend: ₹30,000/month
+Project: "IoT-based Smart Metering Solutions"
+
+TECHNICAL SKILLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Simulation Tools:
+• MATLAB/Simulink (Expert)
+• PSCAD/EMTDC
+• ETAP
+• DIgSILENT PowerFactory
+• PSS/E
+
+Programming Languages:
+• Python (Expert) - TensorFlow, PyTorch, Scikit-learn
+• C/C++ (Intermediate)
+• R (Intermediate)
+
+PLACEMENT DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Company Placed: General Electric (GE) - Grid Solutions
+Position: Power Systems Engineer (Grade: E2)
+Package: ₹18,00,000 per annum
+Location: Bangalore
+Joining Date: 1st August 2024
+
+VERIFICATION & AUTHENTICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Transcript Number: TR/EE/2024/091
+Issue Date: 24-January-2026
+Issued To: Aditya Kumar Singh
+
+This transcript contains 17 courses completed over 4 semesters
+with a CGPA of 9.41/10.00
+
+This is a computer-generated document and does not require
+a physical signature. For verification, please visit:
+https://uohyd.ac.in/transcript/verify/TR-EE-2024-091
+
+Or scan the QR code below:
+[QR CODE PLACEHOLDER]
+
+╔══════════════════════════════════════════════════════════════╗
+║ Issued by: Office of the Controller of Examinations         ║
+║ University of Hyderabad                                      ║
+║ Prof. C.R. Rao Road, Gachibowli                             ║
+║ Hyderabad - 500046, Telangana, India                        ║
+║ Phone: +91-40-23134000                                       ║
+║ Email: coe@uohyd.ac.in                                       ║
+║ Website: www.uohyd.ac.in                                     ║
+╚══════════════════════════════════════════════════════════════╝

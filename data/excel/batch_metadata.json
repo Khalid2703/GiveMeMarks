@@ -1,0 +1,65 @@
+{
+  "batches": [
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_120913.xlsx",
+      "created_at": "2026-01-23T12:09:13.217864",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_120913.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_180812.xlsx",
+      "created_at": "2026-01-23T18:08:12.279962",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_180812.xlsx",
+      "record_count": 0
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_181502.xlsx",
+      "created_at": "2026-01-23T18:15:02.685801",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_181502.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_182556.xlsx",
+      "created_at": "2026-01-23T18:25:56.179332",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_182556.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_182937.xlsx",
+      "created_at": "2026-01-23T18:29:37.326527",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_182937.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_183551.xlsx",
+      "created_at": "2026-01-23T18:35:52.143030",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_183551.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_test_batch_20260123_185057_20260123_185057.xlsx",
+      "created_at": "2026-01-23T18:50:57.099460",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_test_batch_20260123_185057_20260123_185057.xlsx",
+      "record_count": 0
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-23_20260123_230336.xlsx",
+      "created_at": "2026-01-23T23:03:36.523282",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-23_20260123_230336.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-24_20260124_070822.xlsx",
+      "created_at": "2026-01-24T07:08:22.321244",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-24_20260124_070822.xlsx",
+      "record_count": 1
+    },
+    {
+      "filename": "academic_batch_batch_2026-01-24_20260124_073146.xlsx",
+      "created_at": "2026-01-24T07:31:46.164089",
+      "file_path": "C:\\Users\\hp\\UOH_Hackathon\\data\\excel\\academic_batch_batch_2026-01-24_20260124_073146.xlsx",
+      "record_count": 1
+    }
+  ],
+  "current_batch": "academic_batch_batch_2026-01-24_20260124_073146.xlsx"
+}

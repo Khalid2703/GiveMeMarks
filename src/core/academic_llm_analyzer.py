@@ -1,5 +1,6 @@
 """
 Academic Document Analyzer with Dual LLM Provider (Gemini + Cohere fallback).
+UPDATED: Simplified robust prompt for presentation demo
 """
 import json
 import os
@@ -61,7 +62,10 @@ def _clean_model_output(text: str) -> str:
 
 
 class AcademicLLMAnalyzer:
-    """Academic document analyzer with Gemini primary + Cohere fallback."""
+    """Academic document analyzer with Gemini primary + Cohere fallback.
+    
+    UPDATED: Simplified for reliable demo performance
+    """
     
     def __init__(self):
         """Initialize dual LLM provider with quota tracking."""
@@ -73,8 +77,8 @@ class AcademicLLMAnalyzer:
         self.quota_exceeded = False
         
         # Quota tracking
-        self.gemini_calls = 5
-        self.cohere_calls = 5
+        self.gemini_calls = 0
+        self.cohere_calls = 0
         
         # Initialize Gemini
         if GEMINI_AVAILABLE and GEMINI_API_KEY:
@@ -102,13 +106,113 @@ class AcademicLLMAnalyzer:
                 "and configure API keys in .env file."
             )
         
-        logger.info(f"LLM Analyzer initialized. Primary: {self.current_provider}")
+        logger.info(f"✓ LLM Analyzer initialized with SIMPLIFIED DEMO PROMPT")
+        logger.info(f"Primary provider: {self.current_provider}")
     
+    def _get_production_prompt(self) -> str:
+        """
+        Get simplified robust prompt for demo.
+        
+        This prompt is designed to:
+        - Extract basic student information reliably
+        - Return valid JSON every time
+        - Work with incomplete data
+        - Be fast for presentations
+        
+        Returns:
+            Complete system prompt for academic analysis
+        """
+        return """You are a data extraction assistant for academic documents. Your job is to extract student information from academic reports.
+
+CRITICAL RULES:
+1. Return ONLY valid JSON, nothing else
+2. Use null for missing fields
+3. DO NOT invent data
+4. DO NOT add comments or explanations
+
+Extract the following fields from the document:
+
+Required Output Format (JSON only):
+{
+  "Student Name": "full name or null",
+  "Roll Number": "roll number or null",
+  "Email": "email or null",
+  "Phone": "phone or null",
+  "Department": "department or null",
+  "Program": "program or null",
+  "Semester": "semester or null",
+  "Academic Year": "year or null",
+  "CGPA": "cgpa value or null",
+  "SGPA": "sgpa value or null",
+  "Attendance Percentage": "attendance or null",
+  "Date of Birth": "dob or null",
+  "Gender": "gender or null",
+  "Category": "category or null",
+  "Awards and Honors": "awards or null",
+  "Extracurricular Activities": "activities or null",
+  "Remarks": "any remarks or null"
+}
+
+EXAMPLES:
+
+Example 1 - Complete Data:
+Document: "Anjali Sharma, Roll No: 21PH2034, Department: Physics, CGPA: 7.85"
+Output:
+{
+  "Student Name": "Anjali Sharma",
+  "Roll Number": "21PH2034",
+  "Email": null,
+  "Phone": null,
+  "Department": "Physics",
+  "Program": null,
+  "Semester": null,
+  "Academic Year": null,
+  "CGPA": "7.85",
+  "SGPA": null,
+  "Attendance Percentage": null,
+  "Date of Birth": null,
+  "Gender": null,
+  "Category": null,
+  "Awards and Honors": null,
+  "Extracurricular Activities": null,
+  "Remarks": null
+}
+
+Example 2 - Minimal Data:
+Document: "Student report for 2024"
+Output:
+{
+  "Student Name": null,
+  "Roll Number": null,
+  "Email": null,
+  "Phone": null,
+  "Department": null,
+  "Program": null,
+  "Semester": null,
+  "Academic Year": "2024",
+  "CGPA": null,
+  "SGPA": null,
+  "Attendance Percentage": null,
+  "Date of Birth": null,
+  "Gender": null,
+  "Category": null,
+  "Awards and Honors": null,
+  "Extracurricular Activities": null,
+  "Remarks": null
+}
+
+REMEMBER:
+- Return ONLY the JSON object
+- Use null for missing data
+- No markdown formatting
+- No explanations
+- No code blocks"""
+
     def _call_gemini(self, prompt: str) -> tuple[str, Dict[str, Any]]:
         """Call Gemini API with retry and quota handling."""
         try:
             generation_config = {
-                "temperature": LLM_TEMPERATURE,
+                "temperature": 0.1,  # Low temperature for consistency
                 "max_output_tokens": LLM_MAX_TOKENS,
             }
             
@@ -123,6 +227,7 @@ class AcademicLLMAnalyzer:
                 "provider": "gemini",
                 "model": GEMINI_MODEL,
                 "total_tokens": getattr(response, 'total_token_count', None),
+                "prompt_version": "simplified_demo_v1"
             }
             
             self.gemini_calls += 1
@@ -149,7 +254,7 @@ class AcademicLLMAnalyzer:
                 model=COHERE_MODEL,
                 prompt=prompt,
                 max_tokens=LLM_MAX_TOKENS,
-                temperature=LLM_TEMPERATURE,
+                temperature=0.1,
             )
             
             response_text = response.generations[0].text
@@ -158,6 +263,7 @@ class AcademicLLMAnalyzer:
                 "provider": "cohere",
                 "model": COHERE_MODEL,
                 "total_tokens": None,
+                "prompt_version": "simplified_demo_v1"
             }
             
             self.cohere_calls += 1
@@ -174,12 +280,30 @@ class AcademicLLMAnalyzer:
         document_text: str, 
         custom_prompt: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Analyze an academic document with automatic provider failover."""
+        """
+        Analyze an academic document with automatic provider failover.
+        
+        UPDATED: Simplified for demo reliability
+        
+        Args:
+            document_text: Extracted text from academic document
+            custom_prompt: Optional custom prompt (overrides production prompt)
+            
+        Returns:
+            Structured analysis dict with student data and insights
+        """
         try:
-            logger.info("Starting academic document analysis")
-            prompt = custom_prompt or ACADEMIC_ANALYSIS_PROMPT.format(
-                document_text=document_text
-            )
+            logger.info("Starting academic document analysis with SIMPLIFIED PROMPT")
+            
+            # Use simplified prompt for demo
+            if custom_prompt:
+                full_prompt = custom_prompt
+                logger.info("Using custom prompt")
+            else:
+                system_prompt = self._get_production_prompt()
+                user_message = f"\n\nDocument text:\n\n{document_text}\n\nExtract the student information and return ONLY the JSON object:"
+                full_prompt = system_prompt + user_message
+                logger.info("Using SIMPLIFIED demo prompt for reliability")
             
             response_text = None
             metadata = {}
@@ -187,25 +311,65 @@ class AcademicLLMAnalyzer:
             # Try Gemini first
             if self.gemini_available and not self.quota_exceeded:
                 try:
-                    response_text, metadata = self._call_gemini(prompt)
+                    response_text, metadata = self._call_gemini(full_prompt)
                 except ValueError as e:
                     if "QUOTA_EXCEEDED" in str(e):
                         logger.warning("Gemini quota exceeded, switching to Cohere")
             
             # Fallback to Cohere
             if response_text is None and self.cohere_available:
-                logger.info("Using Cohere API")
-                response_text, metadata = self._call_cohere(prompt)
+                logger.info("Using Cohere API (Gemini unavailable or quota exceeded)")
+                response_text, metadata = self._call_cohere(full_prompt)
             
             if response_text is None:
                 raise RuntimeError("All LLM providers failed")
             
-            # Parse response
+            # Parse response with multiple attempts
             cleaned = _clean_model_output(response_text)
             
+            # Log the cleaned response for debugging
+            logger.info(f"Cleaned response preview: {cleaned[:200]}...")
+            
+            parsed = None
+            parse_error = None
+            
+            # Attempt 1: Direct parsing
             try:
                 parsed = json.loads(cleaned)
+            except json.JSONDecodeError as e1:
+                parse_error = e1
+                logger.warning(f"Attempt 1 failed: {e1}")
                 
+                # Attempt 2: Try to fix common JSON issues
+                try:
+                    # Replace single quotes with double quotes
+                    fixed = cleaned.replace("'", '"')
+                    # Remove trailing commas
+                    fixed = re.sub(r',\s*}', '}', fixed)
+                    fixed = re.sub(r',\s*]', ']', fixed)
+                    parsed = json.loads(fixed)
+                    logger.info("Attempt 2 succeeded with fixes")
+                except json.JSONDecodeError as e2:
+                    logger.warning(f"Attempt 2 failed: {e2}")
+                    
+                    # Attempt 3: Extract key-value pairs manually
+                    try:
+                        logger.info("Attempting manual extraction from text...")
+                        parsed = self._manual_extract(cleaned)
+                        if parsed:
+                            logger.info("Attempt 3 succeeded with manual extraction")
+                    except Exception as e3:
+                        logger.warning(f"Attempt 3 failed: {e3}")
+                        parse_error = e2  # Use error from attempt 2
+            
+            if parsed:
+                
+                # Convert nulls to empty strings for Excel compatibility
+                for key in parsed:
+                    if parsed[key] is None:
+                        parsed[key] = ''
+                
+                # Add metadata
                 parsed.setdefault('_metadata', {})
                 parsed['_metadata'].update({
                     **metadata,
@@ -213,16 +377,66 @@ class AcademicLLMAnalyzer:
                     'error': False,
                 })
                 
-                logger.info(f"Successfully parsed response (provider: {metadata.get('provider')})")
+                logger.info(f"✓ Successfully parsed response (provider: {metadata.get('provider')})")
+                logger.info(f"✓ Extracted: {parsed.get('Student Name', 'N/A')} - {parsed.get('Roll Number', 'N/A')}")
                 return parsed
-                
-            except json.JSONDecodeError as e:
-                logger.error(f"Failed to parse JSON: {e}")
-                return self._create_parse_error_response(str(e), response_text, metadata)
+            else:
+                # All parsing attempts failed
+                logger.error(f"All parsing attempts failed: {parse_error}")
+                logger.error(f"Raw response: {response_text[:500]}")
+                logger.error(f"Cleaned response: {cleaned[:500]}")
+                return self._create_parse_error_response(str(parse_error), response_text, metadata)
         
         except Exception as ex:
             logger.exception(f"Unexpected error: {ex}")
             return self._create_error_response(str(ex))
+    
+    def _manual_extract(self, text: str) -> Optional[Dict[str, Any]]:
+        """Manually extract student information from text as last resort."""
+        try:
+            result = {
+                'Student Name': '',
+                'Roll Number': '',
+                'Email': '',
+                'Phone': '',
+                'Department': '',
+                'Program': '',
+                'Semester': '',
+                'Academic Year': '',
+                'CGPA': '',
+                'SGPA': '',
+                'Attendance Percentage': '',
+                'Date of Birth': '',
+                'Gender': '',
+                'Category': '',
+                'Awards and Honors': '',
+                'Extracurricular Activities': '',
+                'Remarks': 'Extracted via manual parsing'
+            }
+            
+            # Extract patterns
+            patterns = {
+                'Student Name': r'(?:Student Name|Name)\s*[:"]\s*([^,"\n]+)',
+                'Roll Number': r'(?:Roll Number|Roll No|Roll)\s*[:"]\s*([^,"\n]+)',
+                'Email': r'(?:Email)\s*[:"]\s*([^,"\n]+)',
+                'Department': r'(?:Department)\s*[:"]\s*([^,"\n]+)',
+                'CGPA': r'(?:CGPA)\s*[:"]\s*([0-9.]+)',
+            }
+            
+            for field, pattern in patterns.items():
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    result[field] = match.group(1).strip()
+            
+            # Only return if we found at least one key field
+            if result.get('Student Name') or result.get('Roll Number'):
+                logger.info(f"Manual extraction found: {result.get('Student Name')} - {result.get('Roll Number')}")
+                return result
+            
+            return None
+        except Exception as e:
+            logger.error(f"Manual extraction failed: {e}")
+            return None
     
     def _create_parse_error_response(
         self, 
@@ -234,13 +448,21 @@ class AcademicLLMAnalyzer:
         return {
             'Student Name': 'Parse Error',
             'Roll Number': 'Parse Error',
-            'Email': 'Parse Error',
-            'Phone': 'Parse Error',
+            'Email': '',
+            'Phone': '',
             'Department': 'Parse Error',
-            'Program': 'Parse Error',
-            'Semester': 'Parse Error',
-            'CGPA': 'Parse Error',
-            'Academic Year': 'Parse Error',
+            'Program': '',
+            'Semester': '',
+            'CGPA': '',
+            'SGPA': '',
+            'Attendance Percentage': '',
+            'Academic Year': '',
+            'Date of Birth': '',
+            'Gender': '',
+            'Category': '',
+            'Awards and Honors': '',
+            'Extracurricular Activities': '',
+            'Remarks': f'JSON Parse Error: {error_msg}',
             '_metadata': {
                 **metadata,
                 'error': True,
@@ -255,13 +477,21 @@ class AcademicLLMAnalyzer:
         return {
             'Student Name': 'Error',
             'Roll Number': 'Error',
-            'Email': 'Error',
-            'Phone': 'Error',
+            'Email': '',
+            'Phone': '',
             'Department': 'Error',
-            'Program': 'Error',
-            'Semester': 'Error',
-            'CGPA': 'Error',
-            'Academic Year': 'Error',
+            'Program': '',
+            'Semester': '',
+            'CGPA': '',
+            'SGPA': '',
+            'Attendance Percentage': '',
+            'Academic Year': '',
+            'Date of Birth': '',
+            'Gender': '',
+            'Category': '',
+            'Awards and Honors': '',
+            'Extracurricular Activities': '',
+            'Remarks': f'System Error: {error_message}',
             '_metadata': {
                 'provider': self.current_provider or 'unknown',
                 'model': 'unknown',
@@ -300,6 +530,7 @@ class AcademicLLMAnalyzer:
         """Get current provider status."""
         return {
             'current_provider': self.current_provider,
+            'prompt_version': 'simplified_demo_v1',
             'gemini': {
                 'available': self.gemini_available,
                 'quota_exceeded': self.quota_exceeded,

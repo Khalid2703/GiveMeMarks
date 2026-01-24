@@ -276,30 +276,36 @@ class ExcelHandler:
             # Extract metadata
             metadata = analysis_data.get('_metadata', {})
             
-            # Create data row
+            # Helper function to convert None to empty string for Excel
+            def excel_value(v):
+                if v is None:
+                    return ''
+                return v
+            
+            # Create data row (use empty string instead of 'N/A' for missing values)
             data_row = {
                 'Timestamp': current_time,
                 'Document Filename': document_filename,
-                'Student Name': analysis_data.get('Student Name', 'N/A'),
-                'Roll Number': analysis_data.get('Roll Number', 'N/A'),
-                'Email': analysis_data.get('Email', 'N/A'),
-                'Phone': analysis_data.get('Phone', 'N/A'),
-                'Department': analysis_data.get('Department', 'N/A'),
-                'Program': analysis_data.get('Program', 'N/A'),
-                'Semester': analysis_data.get('Semester', 'N/A'),
-                'Academic Year': analysis_data.get('Academic Year', 'N/A'),
-                'CGPA': analysis_data.get('CGPA', 'N/A'),
-                'SGPA': analysis_data.get('SGPA', 'N/A'),
-                'Attendance Percentage': analysis_data.get('Attendance Percentage', 'N/A'),
-                'Date of Birth': analysis_data.get('Date of Birth', 'N/A'),
-                'Gender': analysis_data.get('Gender', 'N/A'),
-                'Category': analysis_data.get('Category', 'N/A'),
-                'Awards and Honors': analysis_data.get('Awards and Honors', 'N/A'),
-                'Extracurricular Activities': analysis_data.get('Extracurricular Activities', 'N/A'),
-                'Remarks': analysis_data.get('Remarks', 'N/A'),
-                'Model Used': metadata.get('model', 'N/A'),
-                'Tokens Used': metadata.get('total_tokens', 'N/A'),
-                'Analysis Status': 'Success' if not metadata.get('error') else 'Error'
+                'Student Name': excel_value(analysis_data.get('Student Name')),
+                'Roll Number': excel_value(analysis_data.get('Roll Number')),
+                'Email': excel_value(analysis_data.get('Email')),
+                'Phone': excel_value(analysis_data.get('Phone')),
+                'Department': excel_value(analysis_data.get('Department')),
+                'Program': excel_value(analysis_data.get('Program')),
+                'Semester': excel_value(analysis_data.get('Semester')),
+                'Academic Year': excel_value(analysis_data.get('Academic Year')),
+                'CGPA': excel_value(analysis_data.get('CGPA')),
+                'SGPA': excel_value(analysis_data.get('SGPA')),
+                'Attendance Percentage': excel_value(analysis_data.get('Attendance Percentage')),
+                'Date of Birth': excel_value(analysis_data.get('Date of Birth')),
+                'Gender': excel_value(analysis_data.get('Gender')),
+                'Category': excel_value(analysis_data.get('Category')),
+                'Awards and Honors': excel_value(analysis_data.get('Awards and Honors')),
+                'Extracurricular Activities': excel_value(analysis_data.get('Extracurricular Activities')),
+                'Remarks': excel_value(analysis_data.get('Remarks')),
+                'Model Used': excel_value(metadata.get('model')),
+                'Tokens Used': excel_value(metadata.get('total_tokens')),
+                'Analysis Status': analysis_data.get('_document_status', 'Success' if not metadata.get('error') else 'Error')
             }
             
             # Read existing data
@@ -373,18 +379,24 @@ class ExcelHandler:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             new_rows = []
             
+            # Helper function for Excel values
+            def excel_value(v):
+                if v is None:
+                    return ''
+                return v
+            
             for course in courses_data:
                 course_row = {
                     'Timestamp': current_time,
                     'Document Filename': document_filename,
-                    'Student Name': student_name,
-                    'Roll Number': roll_number,
-                    'Course Code': course.get('Course Code', 'N/A'),
-                    'Course Name': course.get('Course Name', 'N/A'),
-                    'Credits': course.get('Credits', 'N/A'),
-                    'Grade': course.get('Grade', 'N/A'),
-                    'Semester': course.get('Semester', 'N/A'),
-                    'Academic Year': course.get('Academic Year', 'N/A')
+                    'Student Name': excel_value(student_name),
+                    'Roll Number': excel_value(roll_number),
+                    'Course Code': excel_value(course.get('Course Code')),
+                    'Course Name': excel_value(course.get('Course Name')),
+                    'Credits': excel_value(course.get('Credits')),
+                    'Grade': excel_value(course.get('Grade')),
+                    'Semester': excel_value(course.get('Semester')),
+                    'Academic Year': excel_value(course.get('Academic Year'))
                 }
                 new_rows.append(course_row)
             

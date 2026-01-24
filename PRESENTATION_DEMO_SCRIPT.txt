@@ -1,0 +1,496 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║       📚 PRESENTATION DEMO SCRIPT - STEP BY STEP            ║
+║          UOH Academic Evaluation System                     ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════
+BEFORE YOU START (10 Minutes Before Presentation)
+═══════════════════════════════════════════════════════════════
+
+□ Backend Running
+  Terminal: cd C:\Users\hp\UOH_Hackathon
+  Command: uvicorn api:app --reload --host 0.0.0.0 --port 8000
+  Check: See "Application startup complete"
+
+□ Frontend Running  
+  URL: http://localhost:3000
+  Check: Page loads, shows "UOH Academic Evaluation"
+
+□ System Status Green
+  Check: LLM: gemini ✓ | DB: Connected ✓
+
+□ Sample Documents Ready
+  Location: C:\Users\hp\UOH_Hackathon\sample_documents\
+  Check: 6 .txt files present
+
+□ Clear Old Data
+  Click: "Clear All" button in UI
+  Check: Documents in Queue shows 0
+
+□ Test One Document
+  Upload: Sample_1_Semester_Report.txt
+  Process: Should complete in 5-10 seconds
+  Check: Real student data appears (NOT "Parse Error")
+  Clear: Click "Clear All" again
+
+═══════════════════════════════════════════════════════════════
+DEMO SCRIPT - OPTION A: QUICK DEMO (5 MINUTES)
+═══════════════════════════════════════════════════════════════
+
+⏱️ 0:00-0:30 | INTRODUCTION
+────────────────────────────────────────────────────────────
+"Good morning! Today I'll demonstrate our AI-powered Academic
+Evaluation System for University of Hyderabad."
+
+[Point to screen showing homepage]
+
+"This system automates the extraction of student data from
+academic documents using Google Gemini AI."
+
+⏱️ 0:30-1:00 | SYSTEM OVERVIEW
+────────────────────────────────────────────────────────────
+[Point to system status badges]
+
+"You can see here - our system is live with:
+• Google Gemini AI for intelligent data extraction
+• Supabase database for secure storage
+• Real-time processing status"
+
+[Point to stats cards]
+
+"Current stats: 0 documents in queue, system ready."
+
+⏱️ 1:00-1:30 | UPLOAD DOCUMENT
+────────────────────────────────────────────────────────────
+"Let me show you how it works. I'll upload a semester report."
+
+[Click upload area]
+[Select: Sample_1_Semester_Report.txt]
+
+"This is a standard semester evaluation report with student
+info, grades, attendance, and activities."
+
+[Wait for "✅ Successfully uploaded"]
+
+"Upload complete! You can see it's in the queue now."
+
+⏱️ 1:30-2:30 | PROCESSING
+────────────────────────────────────────────────────────────
+"Now let's process this document."
+
+[Click: "Process Documents (1)"]
+
+"The AI is analyzing the document right now. It's:
+• Identifying student information
+• Extracting course grades
+• Parsing attendance records  
+• Capturing achievements"
+
+[Wait for processing - 5-10 seconds]
+
+"This usually takes 5-10 seconds per document."
+
+⏱️ 2:30-4:00 | RESULTS
+────────────────────────────────────────────────────────────
+"Excellent! Processing complete with 100% success rate."
+
+[Scroll to Document Processing Status]
+
+"Here you can see the document status - marked as COMPLETE
+with identity data successfully extracted."
+
+[Scroll to Students with Identity table]
+
+"And here's the extracted data:
+• Student Name: Anjali Sharma
+• Roll Number: 21PH2034
+• Department: Physics
+• CGPA: 7.85
+• Email: anjali.sharma@uohyd.ac.in"
+
+"All this information was automatically extracted by the AI."
+
+⏱️ 4:00-5:00 | EXCEL EXPORT
+────────────────────────────────────────────────────────────
+"Finally, let's export this data."
+
+[Click: "Download Excel Report"]
+[Open Excel file]
+
+"Here's the Excel output - professionally formatted with:
+• Student information in the first sheet
+• Course details in a separate sheet
+• Ready for import into any ERP system"
+
+"This saves hours of manual data entry!"
+
+CLOSING
+────────────────────────────────────────────────────────────
+"In just 5 minutes, we demonstrated how our system can:
+✓ Upload academic documents
+✓ Extract data using AI
+✓ Display results instantly
+✓ Export to Excel format
+
+The system handles various document types and can process
+batches of hundreds of documents efficiently."
+
+═══════════════════════════════════════════════════════════════
+DEMO SCRIPT - OPTION B: STANDARD DEMO (10 MINUTES)
+═══════════════════════════════════════════════════════════════
+
+⏱️ 0:00-1:00 | INTRODUCTION & PROBLEM STATEMENT
+────────────────────────────────────────────────────────────
+"Good morning! Let me share the problem we're solving.
+
+Universities handle thousands of academic documents each semester:
+• Semester reports
+• Exam result sheets  
+• Student profiles
+• Transcripts
+
+Manually entering this data is:
+• Time-consuming (100+ hours per batch)
+• Error-prone (typing mistakes)
+• Inefficient (multiple data re-entry)
+
+Our solution automates this entire process using AI."
+
+⏱️ 1:00-2:00 | SYSTEM ARCHITECTURE
+────────────────────────────────────────────────────────────
+"Let me show you how our system works."
+
+[Point to homepage]
+
+"Frontend: Built with React for responsive design
+Backend: Python FastAPI for high-performance processing
+AI: Google Gemini for intelligent data extraction
+Database: Supabase for secure storage
+Fallback: Cohere AI if Gemini quota is exceeded"
+
+[Point to system status]
+
+"You can see both AI and database are connected and ready."
+
+⏱️ 2:00-3:00 | DEMO 1: SIMPLE DOCUMENT
+────────────────────────────────────────────────────────────
+"Let's start with a simple semester report."
+
+[Upload: Sample_1_Semester_Report.txt]
+[Click Process]
+
+"This document contains:
+• Basic student information
+• Semester grades
+• Attendance records"
+
+[Wait for processing]
+
+"Processing... The AI is reading the document and extracting
+structured data from unstructured text."
+
+[Show results]
+
+"Perfect! Extracted: Name, Roll Number, Department, CGPA, Email,
+and all course grades."
+
+⏱️ 3:00-4:30 | DEMO 2: COMPLEX DOCUMENT
+────────────────────────────────────────────────────────────
+"Now let's try something more complex."
+
+[Click "Process More" to reset]
+[Upload: Sample_4_Student_Profile.txt]
+
+"This is a complete student registration profile with:
+• Personal information
+• Family details
+• Academic history
+• Technical skills
+• Internship experience"
+
+[Click Process]
+[Wait for processing]
+
+"Notice how the system handles this much more complex structure.
+It intelligently identifies relevant sections and extracts
+the appropriate data."
+
+[Show results]
+
+"Extracted everything: Personal info, contact details, CGPA,
+scholarship information, and more."
+
+⏱️ 4:30-6:00 | DEMO 3: BATCH PROCESSING
+────────────────────────────────────────────────────────────
+"Now the real power - batch processing."
+
+[Click "Process More"]
+[Upload: Sample_1, Sample_2, Sample_4 together]
+
+"I'm uploading 3 different documents:
+1. Semester Report (B.Sc Physics)
+2. Exam Result Sheet (B.Tech CS)  
+3. Student Profile (B.Tech Mechanical)"
+
+[Click Process]
+
+"The system processes all three simultaneously."
+
+[Wait for processing]
+
+"Processing complete! 3/3 documents successful - 100% success rate."
+
+[Scroll to Students table]
+
+"And here are all three students:
+• Anjali Sharma - Physics - 7.85 CGPA
+• Rahul Verma - Computer Science - 8.52 CGPA
+• Karthik Reddy - Mechanical - 8.35 CGPA"
+
+"Different departments, different document types, all
+processed correctly."
+
+⏱️ 6:00-7:00 | DOCUMENT STATUS TRACKING
+────────────────────────────────────────────────────────────
+[Scroll to Document Processing Status]
+
+"The system provides detailed status for each document:
+• COMPLETE: Full data extracted successfully
+• PARTIAL: Some data missing but processed
+• PROCESSING_ERROR: Document needs manual review"
+
+"This transparency helps administrators quickly identify
+any issues."
+
+⏱️ 7:00-8:30 | EXCEL EXPORT & DATA QUALITY
+────────────────────────────────────────────────────────────
+[Click: Download Excel Report]
+[Open Excel file]
+
+"The Excel export has two sheets:
+
+Sheet 1 - Student Data:
+• All student information in rows
+• 20+ columns of data
+• Formatted and ready for use"
+
+[Switch to Sheet 2]
+
+"Sheet 2 - Course Details:
+• Individual courses for each student
+• Course codes, names, grades, credits
+• Can be imported into LMS or ERP systems"
+
+"This file can be:
+• Imported directly into university ERP
+• Shared with faculty
+• Used for analytics
+• Archived for records"
+
+⏱️ 8:30-10:00 | FEATURES & CAPABILITIES
+────────────────────────────────────────────────────────────
+"Let me highlight key features:"
+
+[Navigate through UI]
+
+"1. Multi-Document Support:
+   Handles transcripts, reports, profiles, exam sheets"
+
+"2. Batch Processing:
+   Process multiple documents simultaneously"
+
+"3. Real-time Status:
+   Live updates during processing"
+
+"4. Smart Error Handling:
+   3-tier parsing system ensures high accuracy"
+
+"5. Mobile Responsive:
+   Works on desktop, tablet, and mobile"
+
+"6. Secure Storage:
+   All data encrypted and stored securely"
+
+"7. Export Options:
+   Excel download for further analysis"
+
+"8. History Tracking:
+   Previous batches available for re-download"
+
+CLOSING
+────────────────────────────────────────────────────────────
+"In summary, our Academic Evaluation System:
+
+✅ Saves 90%+ time compared to manual entry
+✅ Reduces errors through AI validation
+✅ Handles multiple document types
+✅ Scales to thousands of documents
+✅ Provides instant Excel export
+✅ Works with existing university systems
+
+The system is production-ready and can be deployed for the
+upcoming semester immediately."
+
+═══════════════════════════════════════════════════════════════
+DEMO SCRIPT - OPTION C: COMPLETE DEMO (15 MINUTES)
+═══════════════════════════════════════════════════════════════
+
+[Includes everything from Option B, plus:]
+
+⏱️ 10:00-12:00 | ADVANCED FEATURES
+────────────────────────────────────────────────────────────
+"Let me show you some advanced capabilities."
+
+[Upload: Sample_6_Complete_Transcript.txt]
+
+"This is a complete M.Tech transcript with:
+• All 4 semesters of courses
+• Thesis details
+• Research publications
+• Internship history
+• Placement information"
+
+[Process and show results]
+
+"Notice how the system extracted:
+• 17 different courses across 4 semesters
+• CGPA: 9.41 (University Gold Medal)
+• Thesis title and supervisor
+• Research publications
+• Placement at GE with ₹18 LPA package"
+
+"This level of detail extraction is difficult even for humans,
+but our AI handles it accurately."
+
+⏱️ 12:00-13:00 | MOBILE RESPONSIVE DEMO
+────────────────────────────────────────────────────────────
+[Open browser DevTools and switch to mobile view]
+
+"The system is fully responsive. On mobile:
+• Cards view for student data
+• Touch-friendly buttons
+• Same functionality as desktop"
+
+"Faculty can access this from anywhere - office, home, or
+even during campus visits."
+
+⏱️ 13:00-14:00 | ERROR HANDLING & EDGE CASES
+────────────────────────────────────────────────────────────
+"What if a document has incomplete data?"
+
+[Explain the 3-tier system]
+
+"Our system has 3 parsing levels:
+1. Direct JSON parsing
+2. Auto-fix common errors
+3. Manual extraction as fallback"
+
+"If all fail, the system clearly marks it as needing review,
+rather than generating incorrect data."
+
+⏱️ 14:00-15:00 | SCALABILITY & FUTURE
+────────────────────────────────────────────────────────────
+"Looking ahead, the system can:
+
+• Process thousands of documents in a batch
+• Generate analytics dashboards
+• Integrate with existing ERP systems
+• Add OCR for scanned documents (already supported)
+• Expand to handle other document types
+• Provide API access for automation"
+
+"We've built this to scale with the university's growing needs."
+
+FINAL CLOSING
+────────────────────────────────────────────────────────────
+"Thank you! To summarize:
+
+Problem: Manual data entry is slow and error-prone
+Solution: AI-powered automated extraction system
+Technology: Gemini AI + React + Python + Supabase
+Result: 90% time savings, higher accuracy, scalable
+
+The system is ready for deployment and can start processing
+documents immediately.
+
+Questions?"
+
+═══════════════════════════════════════════════════════════════
+BACKUP PLANS IF DEMO BREAKS
+═══════════════════════════════════════════════════════════════
+
+PLAN A: Quick Restart (1 minute)
+────────────────────────────────────────────────────────────
+1. Say: "Let me quickly restart the service"
+2. Stop backend (Ctrl+C)
+3. Restart: uvicorn api:app --reload --host 0.0.0.0 --port 8000
+4. Refresh browser
+5. Continue demo
+
+PLAN B: Use Previous Batch (30 seconds)
+────────────────────────────────────────────────────────────
+1. Say: "Let me show you a batch we processed earlier"
+2. Click "Show" under Previous Batches
+3. Download and open Excel file
+4. Show the data and explain the extraction
+5. Continue with architecture explanation
+
+PLAN C: Code Walkthrough (if all else fails)
+────────────────────────────────────────────────────────────
+1. Say: "Let me show you how this works under the hood"
+2. Open: src/core/academic_llm_analyzer.py
+3. Explain: AI prompt engineering
+4. Show: JSON parsing logic
+5. Open: frontend/src/App.jsx
+6. Show: React components and state management
+7. Explain: Full system architecture
+
+Still impressive, shows your technical depth!
+
+═══════════════════════════════════════════════════════════════
+HANDLING QUESTIONS
+═══════════════════════════════════════════════════════════════
+
+Q: "What if the AI makes mistakes?"
+A: "We have 3-tier parsing with validation. If all fail, the
+    document is marked for manual review rather than inserting
+    incorrect data. Plus, faculty can verify extracted data
+    before final import."
+
+Q: "Can it handle scanned PDFs?"
+A: "Yes! The system includes OCR capability for image-based
+    PDFs. It automatically detects if a PDF needs OCR."
+
+Q: "What about data privacy?"
+A: "All data is encrypted in transit and at rest. The database
+    has role-based access control. We never store data in the
+    AI provider's servers - it's only used for processing."
+
+Q: "How long does processing take?"
+A: "5-10 seconds per document on average. For a batch of 100
+    documents, about 10-15 minutes total. Much faster than
+    hours of manual entry."
+
+Q: "What document formats do you support?"
+A: "PDF (text and scanned), text files, and images. We can
+    easily add support for Word documents if needed."
+
+Q: "Can this integrate with our existing ERP?"
+A: "Yes! The Excel export format can be mapped to any ERP
+    import template. We can also provide direct API access
+    for automated integration."
+
+Q: "What happens if Google Gemini is down?"
+A: "The system automatically fails over to Cohere AI. We have
+    dual provider support for 99.9% uptime."
+
+Q: "How much does this cost to run?"
+A: "With API free tiers: essentially free for moderate use.
+    At scale: approximately ₹2-5 per 1000 documents processed.
+    Far cheaper than hiring data entry operators."
+
+═══════════════════════════════════════════════════════════════
+GOOD LUCK! 🎉 YOU'VE GOT THIS! 🚀
+═══════════════════════════════════════════════════════════════

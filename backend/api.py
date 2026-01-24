@@ -27,6 +27,8 @@ from src.utils.logger import get_logger
 from config.settings import DOCUMENT_DIR, EXCEL_DIR
 
 
+
+
 # Initialize FastAPI app
 app = FastAPI(
     title="UOH Academic Evaluation API",
@@ -64,11 +66,26 @@ class ProcessingStatus(BaseModel):
     progress: Optional[float] = None
 
 class StudentData(BaseModel):
-    student_name: str
-    roll_number: str
-    email: str
-    department: str
-    cgpa: str
+    student_name: Optional[str] = None
+    roll_number: Optional[str] = None
+    email: Optional[str] = None
+    department: Optional[str] = None
+    cgpa: Optional[float] = None
+    document_status: Optional[str] = None
+    
+    class Config:
+        # Allow None values for all fields
+        from_attributes = True
+
+class DocumentResult(BaseModel):
+    """Represents a processed document with status."""
+    filename: str
+    document_status: str
+    has_identity: bool
+    has_academic_data: bool
+    student_name: Optional[str] = None
+    roll_number: Optional[str] = None
+    error: Optional[str] = None
 
 class BatchResult(BaseModel):
     batch_id: str
@@ -78,6 +95,7 @@ class BatchResult(BaseModel):
     failed: int
     success_rate: float
     students: List[StudentData]
+    documents: List[DocumentResult]
 
 class SystemStatus(BaseModel):
     status: str
@@ -129,20 +147,38 @@ async def health_check():
 async def get_status():
     """Get system status."""
     try:
+        if evaluator is None:
+            raise HTTPException(status_code=503, detail="Evaluator not initialized")
+        
         info = evaluator.get_system_info()
         
         # Count documents in queue
-        doc_count = len(list(DOCUMENT_DIR.glob("*.pdf"))) if DOCUMENT_DIR.exists() else 0
+        doc_count = 0
+        try:
+            if DOCUMENT_DIR.exists():
+                doc_count = len(list(DOCUMENT_DIR.glob("*.pdf")))
+        except Exception as e:
+            logger.warning(f"Failed to count documents: {e}")
+        
+        # Get LLM provider name safely
+        llm_provider = "none"
+        if info.get('llm_available') and info.get('llm_status'):
+            llm_status = info['llm_status']
+            if isinstance(llm_status, dict):
+                llm_provider = llm_status.get('current_provider', 'none') or 'none'
         
         return SystemStatus(
             status="operational",
-            llm_available=info['llm_available'],
-            llm_provider=info['llm_status']['current_provider'] if info['llm_available'] else "none",
-            supabase_available=info['supabase_available'],
+            llm_available=info.get('llm_available', False),
+            llm_provider=llm_provider,
+            supabase_available=info.get('supabase_available', False),
             documents_in_queue=doc_count
         )
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Status endpoint error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to get system status: {str(e)}")
 
 
 @app.post("/upload")
@@ -229,20 +265,51 @@ async def process_documents(
             batch_name=batch_name
         )
         
-        # Parse results
-        successful = sum(1 for r in results if not r.get('_metadata', {}).get('error'))
+        # Parse results - count successful processing (not just identity presence)
+        successful = sum(1 for r in results if r.get('_metadata', {}).get('processing_success', True))
         failed = len(results) - successful
         
-        # Extract student data
+        # Extract all documents with status
+        documents = []
         students = []
+        
         for result in results:
-            if not result.get('_metadata', {}).get('error'):
+            file_info = result.get('_file_info', {})
+            filename = file_info.get('filename', 'unknown')
+            metadata = result.get('_metadata', {})
+            
+            # Create document result (always include, regardless of identity)
+            doc_result = DocumentResult(
+                filename=filename,
+                document_status=result.get('_document_status', 'UNKNOWN'),
+                has_identity=result.get('_has_identity', False),
+                has_academic_data=result.get('_has_academic_data', False),
+                student_name=result.get("Student Name"),
+                roll_number=result.get("Roll Number"),
+                error=metadata.get('error')
+            )
+            documents.append(doc_result)
+            
+            # Extract student data (only if identity exists, for display purposes)
+            if result.get('_has_identity') and not metadata.get('error'):
+                student_name = result.get("Student Name")
+                roll_number = result.get("Roll Number")
+                
+                # Handle CGPA conversion
+                cgpa = result.get("CGPA")
+                if cgpa is not None:
+                    try:
+                        cgpa = float(cgpa)
+                    except (ValueError, TypeError):
+                        cgpa = None
+                
                 students.append(StudentData(
-                    student_name=result.get('Student Name', 'N/A'),
-                    roll_number=result.get('Roll Number', 'N/A'),
-                    email=result.get('Email', 'N/A'),
-                    department=result.get('Department', 'N/A'),
-                    cgpa=result.get('CGPA', 'N/A')
+                    student_name=student_name,
+                    roll_number=roll_number,
+                    email=result.get("Email"),
+                    department=result.get("Department"),
+                    cgpa=cgpa,
+                    document_status=result.get('_document_status')
                 ))
         
         # Clean up processed files
@@ -258,8 +325,9 @@ async def process_documents(
             total_documents=len(results),
             successful=successful,
             failed=failed,
-            success_rate=successful / len(results) * 100,
-            students=students
+            success_rate=successful / len(results) * 100 if results else 0,
+            students=students,
+            documents=documents
         )
         
         logger.info(f"Batch completed: {successful}/{len(results)} successful")
