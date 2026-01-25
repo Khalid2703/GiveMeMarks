@@ -5,7 +5,7 @@ import AIQueryPage from './components/AIQueryPage'
 import ResultsPage from './components/ResultsPage'
 import AcademicAlerts from './components/AcademicAlerts'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = 'https://givememarks.onrender.com'
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('homepage')

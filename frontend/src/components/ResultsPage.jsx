@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Search, Loader, AlertCircle, Filter, X, ChevronDown } from 'lucide-react'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = 'https://givememarks.onrender.com'
 
 export default function ResultsPage() {
   const [searchQuery, setSearchQuery] = useState('')

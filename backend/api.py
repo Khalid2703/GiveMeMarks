@@ -110,9 +110,19 @@ class SystemStatus(BaseModel):
 # Startup event
 @app.on_event("startup")
 async def startup_event():
-    """Initialize evaluator on startup."""
+    """Initialize evaluator and create demo data on startup."""
     global evaluator
     try:
+        # Create demo data if it doesn't exist
+        logger.info("Checking for demo data...")
+        try:
+            from create_demo_data import check_and_create_if_needed
+            check_and_create_if_needed()
+            logger.info("✓ Demo data check complete")
+        except Exception as e:
+            logger.warning(f"Could not create demo data: {e}")
+        
+        # Initialize evaluator
         evaluator = AcademicEvaluator()
         logger.info("✓ API started successfully")
     except Exception as e:
@@ -928,6 +938,27 @@ async def ai_query_endpoint(request: dict):
                 "Access-Control-Allow-Headers": "*"
             }
         )
+
+@app.post("/api/create-demo-data")
+async def create_demo_data_endpoint():
+    """Manually trigger demo data creation (for deployment testing)."""
+    try:
+        from create_demo_data import create_sample_batch
+        
+        batch_filename, student_count = create_sample_batch()
+        
+        return {
+            "success": True,
+            "message": "Demo data created successfully",
+            "batch_filename": batch_filename,
+            "student_count": student_count
+        }
+    except Exception as e:
+        logger.error(f"Demo data creation error: {e}", exc_info=True)
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 # Development server
 if __name__ == "__main__":

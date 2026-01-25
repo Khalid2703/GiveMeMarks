@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { MessageSquare, Loader, Database, RefreshCw, Info, Users, TrendingUp, Sparkles, X } from 'lucide-react'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = 'https://givememarks.onrender.com'
 
 export default function AIQueryPage() {
   const [chatMessages, setChatMessages] = useState([])
