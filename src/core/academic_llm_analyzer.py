@@ -216,10 +216,24 @@ REMEMBER:
                 "max_output_tokens": LLM_MAX_TOKENS,
             }
             
+            # Add safety settings to avoid blocking
+            safety_settings = [
+                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+            ]
+            
             response = self.gemini_model.generate_content(
                 prompt,
-                generation_config=generation_config
+                generation_config=generation_config,
+                safety_settings=safety_settings
             )
+            
+            # Check if response was blocked
+            if not response.parts:
+                logger.error("Gemini response was blocked by safety settings")
+                raise ValueError("Response blocked by safety filter")
             
             response_text = response.text
             
@@ -445,62 +459,16 @@ REMEMBER:
         metadata: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Create standardized parse error response."""
-        return {
-            'Student Name': 'Parse Error',
-            'Roll Number': 'Parse Error',
-            'Email': '',
-            'Phone': '',
-            'Department': 'Parse Error',
-            'Program': '',
-            'Semester': '',
-            'CGPA': '',
-            'SGPA': '',
-            'Attendance Percentage': '',
-            'Academic Year': '',
-            'Date of Birth': '',
-            'Gender': '',
-            'Category': '',
-            'Awards and Honors': '',
-            'Extracurricular Activities': '',
-            'Remarks': f'JSON Parse Error: {error_msg}',
-            '_metadata': {
-                **metadata,
-                'error': True,
-                'error_type': 'parse_error',
-                'error_message': f"Failed to parse: {error_msg}",
-                'raw_response': raw_response[:500],
-            }
-        }
+        logger.error(f"Parse error - returning None to skip document: {error_msg}")
+        # Return None to signal this document should be skipped
+        # instead of storing "Parse Error" in Excel
+        return None
     
     def _create_error_response(self, error_message: str) -> Dict[str, Any]:
         """Create standardized error response."""
-        return {
-            'Student Name': 'Error',
-            'Roll Number': 'Error',
-            'Email': '',
-            'Phone': '',
-            'Department': 'Error',
-            'Program': '',
-            'Semester': '',
-            'CGPA': '',
-            'SGPA': '',
-            'Attendance Percentage': '',
-            'Academic Year': '',
-            'Date of Birth': '',
-            'Gender': '',
-            'Category': '',
-            'Awards and Honors': '',
-            'Extracurricular Activities': '',
-            'Remarks': f'System Error: {error_message}',
-            '_metadata': {
-                'provider': self.current_provider or 'unknown',
-                'model': 'unknown',
-                'tokens_used': 0,
-                'error': True,
-                'error_type': 'system_error',
-                'error_message': error_message,
-            }
-        }
+        logger.error(f"System error - returning None to skip document: {error_message}")
+        # Return None to signal this document should be skipped
+        return None
     
     def validate_api_connection(self) -> Dict[str, bool]:
         """Test connections to both LLM providers."""

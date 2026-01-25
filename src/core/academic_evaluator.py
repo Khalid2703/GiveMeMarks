@@ -162,6 +162,12 @@ class AcademicEvaluator:
             raise ValueError("Text extraction failed")
 
         raw_result = self.llm_analyzer.analyze_document(text, custom_prompt)
+        
+        # Handle None result (API/parsing error)
+        if raw_result is None:
+            self.logger.error(f"LLM analysis returned None for {document_path.name}")
+            return None
+        
         result = self._normalize_analysis_result(raw_result)
 
         result["_file_info"].update({
@@ -202,6 +208,11 @@ class AcademicEvaluator:
 
             try:
                 result = self.process_single_document(doc_path, custom_prompt, save_to_excel=False)
+                
+                # SKIP if result is None (parsing/processing error)
+                if result is None:
+                    self.logger.warning(f"Skipping {doc_path.name} - processing returned None (likely API error)")
+                    continue
                 
                 # Add processing metadata
                 if "_metadata" not in result:

@@ -24,7 +24,7 @@ for directory in [DATA_DIR, DOCUMENT_DIR, EXCEL_DIR, LOG_DIR]:
 
 # Gemini API (Primary)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
 
 # Cohere API (Fallback)
 COHERE_API_KEY = os.getenv("COHERE_API_KEY", "").strip()
