@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Search, Loader, AlertCircle, Filter, X, ChevronDown } from 'lucide-react'
 
-const API_URL = import.meta.env.PROD 
-  ? 'https://uoh-academic-backend.onrender.com'
-  : 'http://localhost:8000'
+const API_URL = 'http://localhost:8000'
 
 export default function ResultsPage() {
   const [searchQuery, setSearchQuery] = useState('')

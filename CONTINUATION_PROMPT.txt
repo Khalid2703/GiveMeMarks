@@ -1,0 +1,69 @@
+# 💬 CONTINUATION PROMPT FOR NEXT CHAT
+
+Copy and paste this into your next Claude chat to continue with full context:
+
+---
+
+I'm working on a hackathon project called "UOH Academic Evaluation System" (GiveMeMarks) - an AI-powered document processing application.
+
+**GITHUB REPOSITORY:** https://github.com/Khalid2703/GiveMeMarks
+
+**PROJECT LOCATION:** C:\Users\hp\UOH_Hackathon
+
+**CURRENT SITUATION:**
+- ✅ Application works perfectly on localhost
+- ✅ Backend: FastAPI (Python) on http://localhost:8000
+- ✅ Frontend: React + Vite on http://localhost:5173  
+- ✅ All features working (upload, process, search, dashboard, AI query)
+- ✅ Local repository cleaned up (removed 70+ documentation files)
+- ❓ GitHub still has 70+ documentation files (need to sync)
+
+**TECH STACK:**
+- Backend: FastAPI, Python
+- Frontend: React, Vite, TailwindCSS
+- AI: Google Gemini (gemini-2.5-flash) + Cohere
+- Database: Supabase
+- Storage: Excel exports
+
+**API CONFIGURATION (Currently localhost):**
+Three files use localhost API:
+1. `frontend/src/App.jsx` → `const API_URL = 'http://localhost:8000'`
+2. `frontend/src/components/ResultsPage.jsx` → `const API_URL = 'http://localhost:8000'`
+3. `frontend/src/components/AIQueryPage.jsx` → `const API_URL = 'http://localhost:8000'`
+
+**WHAT I NEED HELP WITH:**
+[Describe your specific issue here - deployment, GitHub sync, feature implementation, etc.]
+
+**KEY FILES IN MY PROJECT:**
+- `ACTION_PLAN_NOW.txt` - Current action plan
+- `GITHUB_SYNC_GUIDE.txt` - Guide to sync local with GitHub
+- `DEPLOY_SIMPLE.md` - Deployment guide
+- `README_CLEAN.md` - Project documentation
+- `requirements.txt` - Python dependencies
+- `render.yaml` - Backend deployment config for Render.com
+- `vercel.json` - Frontend deployment config for Vercel
+
+**CLEANUP SCRIPTS AVAILABLE:**
+- `clean_repository.bat` - Removes 70+ unnecessary documentation files
+- `git_cleanup.bat` - Updates Git configuration
+- `check_git_status.bat` - Shows current Git status
+- `sync_with_github_clean.bat` - Syncs clean local repo to GitHub
+
+**IMPORTANT NOTES:**
+- Results tab issue was fixed by ensuring all components use same API_URL
+- CORS configured in backend/api.py for localhost and Vercel domains
+- Repository cleanup needed: GitHub has 70+ docs, local is clean
+- All source code is intact and working
+- Ready to deploy once GitHub is cleaned
+
+**RECENT CHANGES:**
+- Updated Gemini model to gemini-2.5-flash
+- Fixed CORS with specific Vercel origin
+- Cleaned local repository
+- Created sync scripts for GitHub cleanup
+
+Please help me with: [YOUR SPECIFIC QUESTION/ISSUE]
+
+---
+
+📌 SAVE THIS PROMPT! Use it whenever you need to continue working on this project in a new chat session.

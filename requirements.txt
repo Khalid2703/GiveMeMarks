@@ -10,8 +10,12 @@ python-dotenv>=1.0.0
 # Logging
 loguru>=0.7.0
 
+# HTTP Clients
+requests>=2.32.3
+
 # Data Processing
 pandas>=2.0.0
+numpy>=2.2.5
 openpyxl>=3.1.0
 
 # ==================== PDF & OCR PROCESSING ====================
@@ -31,12 +35,17 @@ Pillow>=10.0.0
 # Supabase Client
 supabase>=2.0.0
 
+# Vector DB (Optional - required only for semantic search features)
+chromadb>=1.0.13
+sentence-transformers>=4.1.0
+
 # ==================== WEB FRAMEWORK ====================
 
 # Backend API
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 pydantic>=2.0.0
+python-multipart>=0.0.20
 
 # Frontend UI
 streamlit>=1.28.0

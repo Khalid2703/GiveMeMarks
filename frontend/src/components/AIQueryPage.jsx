@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { MessageSquare, Loader, Database, RefreshCw, Info, Users, TrendingUp, Sparkles, X } from 'lucide-react'
 
-const API_URL = import.meta.env.PROD 
-  ? 'https://uoh-academic-backend.onrender.com'
-  : 'http://localhost:8000'
+const API_URL = 'http://localhost:8000'
 
 export default function AIQueryPage() {
   const [chatMessages, setChatMessages] = useState([])

@@ -1,0 +1,55 @@
+# CONTEXT PROMPT FOR NEXT CHAT SESSION
+
+Copy and paste this into your next Claude chat to continue where we left off:
+
+---
+
+I'm working on a hackathon project called "UOH Academic Evaluation System" - an AI-powered document processing application. Here's the current status:
+
+**PROJECT STRUCTURE:**
+- Location: C:\Users\hp\UOH_Hackathon
+- Backend: FastAPI (Python) - located in backend/
+- Frontend: React + Vite - located in frontend/
+- AI: Google Gemini + Cohere for document analysis
+- Database: Supabase
+- Storage: Excel exports
+
+**CURRENT STATE:**
+✅ Application works perfectly on localhost
+✅ Backend runs on http://localhost:8000
+✅ Frontend runs on http://localhost:5173
+✅ All features working (upload, process, search, dashboard, AI query)
+✅ Repository has been cleaned up of unnecessary docs
+
+**API CONFIGURATION:**
+Currently using localhost in 3 files:
+1. frontend/src/App.jsx → const API_URL = 'http://localhost:8000'
+2. frontend/src/components/ResultsPage.jsx → const API_URL = 'http://localhost:8000'
+3. frontend/src/components/AIQueryPage.jsx → const API_URL = 'http://localhost:8000'
+
+**WHAT I NEED HELP WITH:**
+I want to deploy this application:
+- Backend → Render.com
+- Frontend → Vercel
+
+**ISSUES I'M FACING:**
+[Explain your deployment issues here]
+
+**KEY FILES:**
+- DEPLOY_SIMPLE.md (has deployment instructions)
+- README_CLEAN.md (project documentation)
+- requirements.txt (Python dependencies)
+- render.yaml (backend deployment config)
+- vercel.json (frontend deployment config)
+
+**IMPORTANT NOTES:**
+- The Results tab issue was fixed by ensuring all components use the same API_URL
+- CORS is configured in backend/api.py to allow Vercel domains
+- The repository was cleaned of 35+ documentation files to reduce noise
+- All source code is intact and working
+
+Please help me with deployment issues or any other questions about the project.
+
+---
+
+SAVE THIS PROMPT! Use it to continue working on your project in future chats.
