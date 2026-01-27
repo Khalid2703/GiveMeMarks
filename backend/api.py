@@ -434,70 +434,137 @@ async def count_documents():
 async def get_dashboard_stats():
     """
     Get comprehensive statistics for dashboard visualization
-    Returns data for ALL STUDENTS from ALL BATCHES
+    NEW: Reads from Supabase database instead of Excel files
     """
     try:
-        import pandas as pd
-        import json
+        # Check if Supabase is available
+        if not evaluator.supabase_available:
+            logger.warning("Supabase not available, falling back to Excel")
+            # Fallback to Excel logic (existing code)
+            import pandas as pd
+            import json
+            from collections import Counter
+            
+            batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+            if not batch_metadata_file.exists():
+                logger.warning("batch_metadata.json not found")
+                return {"error": "No data found", "total_students": 0}
+            
+            with open(batch_metadata_file, 'r') as f:
+                metadata = json.load(f)
+            
+            batches = metadata.get('batches', [])
+            if not batches:
+                logger.warning("No batches found")
+                return {"error": "No batches found", "total_students": 0}
+            
+            logger.info(f"Loading data from {len(batches)} batches")
+            
+            all_dfs = []
+            for batch in batches:
+                batch_filename = batch.get('filename')
+                if batch_filename:
+                    batch_path = EXCEL_DIR / batch_filename
+                    if batch_path.exists():
+                        try:
+                            df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
+                            all_dfs.append(df_temp)
+                            logger.info(f"Loaded {len(df_temp)} students from {batch_filename}")
+                        except Exception as e:
+                            logger.warning(f"Failed to read {batch_filename}: {e}")
+            
+            if not all_dfs:
+                logger.warning("No valid batch files found")
+                return {"error": "No valid batch files", "total_students": 0}
+            
+            df = pd.concat(all_dfs, ignore_index=True)
+            logger.info(f"Total combined students: {len(df)}")
+            
+            df = df.drop_duplicates(subset=['Roll Number'], keep='last')
+            logger.info(f"After removing duplicates: {len(df)} unique students")
+            
+            students = df.to_dict('records')
+            
+            cgpa_values = []
+            for s in students:
+                try:
+                    cgpa = s.get('CGPA')
+                    if pd.notna(cgpa):
+                        cgpa_values.append(float(cgpa))
+                except (ValueError, TypeError):
+                    continue
+            
+            departments = [s['Department'] for s in students if pd.notna(s.get('Department'))]
+            
+            cgpa_dist = [
+                {"range": "9.0-10.0", "count": sum(1 for c in cgpa_values if 9.0 <= c <= 10.0)},
+                {"range": "8.0-8.9", "count": sum(1 for c in cgpa_values if 8.0 <= c < 9.0)},
+                {"range": "7.0-7.9", "count": sum(1 for c in cgpa_values if 7.0 <= c < 8.0)},
+                {"range": "6.0-6.9", "count": sum(1 for c in cgpa_values if 6.0 <= c < 7.0)},
+                {"range": "Below 6.0", "count": sum(1 for c in cgpa_values if c < 6.0)},
+            ]
+            
+            dept_counter = Counter(departments)
+            dept_dist = [{"name": dept, "count": count} for dept, count in dept_counter.items()]
+            
+            top_students = sorted(
+                [s for s in students if pd.notna(s.get('CGPA'))],
+                key=lambda x: float(x.get('CGPA', 0)) if pd.notna(x.get('CGPA')) else 0,
+                reverse=True
+            )[:10]
+            
+            top_performers = []
+            for s in top_students:
+                try:
+                    cgpa_raw = s.get('CGPA')
+                    if pd.notna(cgpa_raw):
+                        cgpa_float = float(cgpa_raw)
+                        if not (pd.isna(cgpa_float) or cgpa_float == float('inf') or cgpa_float == float('-inf')):
+                            cgpa_val = round(cgpa_float, 2)
+                        else:
+                            cgpa_val = 0
+                    else:
+                        cgpa_val = 0
+                except (ValueError, TypeError):
+                    cgpa_val = 0
+                
+                top_performers.append({
+                    'name': s.get('Student Name', 'N/A'),
+                    'roll_number': s.get('Roll Number', 'N/A'),
+                    'department': s.get('Department', 'N/A'),
+                    'cgpa': cgpa_val
+                })
+            
+            avg_cgpa = round(sum(cgpa_values) / len(cgpa_values), 2) if cgpa_values else 0
+            
+            response = {
+                "total_students": len(students),
+                "average_cgpa": avg_cgpa,
+                "cgpa_distribution": cgpa_dist,
+                "departments": dept_dist,
+                "top_performers": top_performers,
+                "source": "excel"
+            }
+            
+            logger.info(f"Returning dashboard stats (Excel): {len(students)} students, avg CGPA {avg_cgpa}")
+            return response
+        
+        # SUPABASE PATH - Read from database
         from collections import Counter
         
-        # Read batch metadata
-        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
-        if not batch_metadata_file.exists():
-            logger.warning("batch_metadata.json not found")
-            return {"error": "No batch metadata found", "total_students": 0}
+        logger.info("Fetching students from Supabase database")
+        response = evaluator.supabase_client.client.table('students').select('*').execute()
         
-        with open(batch_metadata_file, 'r') as f:
-            metadata = json.load(f)
+        if not response.data:
+            logger.warning("No students found in Supabase")
+            return {"error": "No students found in database", "total_students": 0}
         
-        batches = metadata.get('batches', [])
-        if not batches:
-            logger.warning("No batches found")
-            return {"error": "No batches found", "total_students": 0}
-        
-        logger.info(f"Loading data from {len(batches)} batches")
-        
-        # Read and combine ALL batch files
-        all_dfs = []
-        for batch in batches:
-            batch_filename = batch.get('filename')
-            if batch_filename:
-                batch_path = EXCEL_DIR / batch_filename
-                if batch_path.exists():
-                    try:
-                        df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
-                        all_dfs.append(df_temp)
-                        logger.info(f"Loaded {len(df_temp)} students from {batch_filename}")
-                    except Exception as e:
-                        logger.warning(f"Failed to read {batch_filename}: {e}")
-        
-        if not all_dfs:
-            logger.warning("No valid batch files found")
-            return {"error": "No valid batch files", "total_students": 0}
-        
-        # Combine all dataframes
-        df = pd.concat(all_dfs, ignore_index=True)
-        logger.info(f"Total combined students: {len(df)}")
-        
-        # Remove duplicates based on Roll Number
-        df = df.drop_duplicates(subset=['Roll Number'], keep='last')
-        logger.info(f"After removing duplicates: {len(df)} unique students")
-        
-        # Convert to list of dicts
-        students = df.to_dict('records')
-        logger.info(f"Found {len(students)} students in batch")
+        students = response.data
+        logger.info(f"Found {len(students)} students in Supabase")
         
         # Calculate statistics
-        cgpa_values = []
-        for s in students:
-            try:
-                cgpa = s.get('CGPA')
-                if pd.notna(cgpa):
-                    cgpa_values.append(float(cgpa))
-            except (ValueError, TypeError):
-                continue
-        
-        departments = [s['Department'] for s in students if pd.notna(s.get('Department'))]
+        cgpa_values = [float(s['cgpa']) for s in students if s.get('cgpa') is not None]
+        departments = [s['department'] for s in students if s.get('department')]
         
         # CGPA Distribution
         cgpa_dist = [
@@ -514,45 +581,31 @@ async def get_dashboard_stats():
         
         # Top Performers
         top_students = sorted(
-            [s for s in students if pd.notna(s.get('CGPA'))],
-            key=lambda x: float(x.get('CGPA', 0)) if pd.notna(x.get('CGPA')) else 0,
+            [s for s in students if s.get('cgpa') is not None],
+            key=lambda x: float(x.get('cgpa', 0)),
             reverse=True
         )[:10]
         
-        top_performers = []
-        for s in top_students:
-            try:
-                cgpa_raw = s.get('CGPA')
-                if pd.notna(cgpa_raw):
-                    cgpa_float = float(cgpa_raw)
-                    if not (pd.isna(cgpa_float) or cgpa_float == float('inf') or cgpa_float == float('-inf')):
-                        cgpa_val = round(cgpa_float, 2)
-                    else:
-                        cgpa_val = 0
-                else:
-                    cgpa_val = 0
-            except (ValueError, TypeError):
-                cgpa_val = 0
-            
-            top_performers.append({
-                'name': s.get('Student Name', 'N/A'),
-                'roll_number': s.get('Roll Number', 'N/A'),
-                'department': s.get('Department', 'N/A'),
-                'cgpa': cgpa_val
-            })
+        top_performers = [{
+            'name': s.get('student_name', 'N/A'),
+            'roll_number': s.get('roll_number', 'N/A'),
+            'department': s.get('department', 'N/A'),
+            'cgpa': round(float(s.get('cgpa', 0)), 2)
+        } for s in top_students]
         
         avg_cgpa = round(sum(cgpa_values) / len(cgpa_values), 2) if cgpa_values else 0
         
-        response = {
+        response_data = {
             "total_students": len(students),
             "average_cgpa": avg_cgpa,
             "cgpa_distribution": cgpa_dist,
             "departments": dept_dist,
-            "top_performers": top_performers
+            "top_performers": top_performers,
+            "source": "supabase"
         }
         
-        logger.info(f"Returning dashboard stats: {len(students)} students, avg CGPA {avg_cgpa}")
-        return response
+        logger.info(f"Returning dashboard stats (Supabase): {len(students)} students, avg CGPA {avg_cgpa}")
+        return response_data
         
     except Exception as e:
         logger.error(f"Error getting dashboard stats: {e}", exc_info=True)
@@ -630,106 +683,136 @@ async def get_academic_alerts(batches: str = ""):
 @app.get("/api/search/students")
 async def search_students(query: str = "", department: str = "", min_cgpa: float = 0.0, max_cgpa: float = 10.0):
     """
-    Search students with filters - searches ALL BATCHES
-    Query params: query (name/roll), department, min_cgpa, max_cgpa
+    Search students with filters
+    NEW: Reads from Supabase database with Excel fallback
     """
     try:
-        import pandas as pd
-        import json
+        # Check if Supabase is available
+        if not evaluator.supabase_available:
+            logger.warning("Supabase not available, using Excel fallback")
+            # Excel fallback logic
+            import pandas as pd
+            import json
+            
+            batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
+            if not batch_metadata_file.exists():
+                return {"results": [], "count": 0}
+            
+            with open(batch_metadata_file, 'r') as f:
+                metadata = json.load(f)
+            
+            batches = metadata.get('batches', [])
+            if not batches:
+                return {"results": [], "count": 0}
+            
+            logger.info(f"Searching across {len(batches)} batches with query: '{query}'")
+            
+            all_dfs = []
+            for batch in batches:
+                batch_filename = batch.get('filename')
+                if batch_filename:
+                    batch_path = EXCEL_DIR / batch_filename
+                    if batch_path.exists():
+                        try:
+                            df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
+                            all_dfs.append(df_temp)
+                        except Exception as e:
+                            logger.warning(f"Failed to read {batch_filename}: {e}")
+            
+            if not all_dfs:
+                return {"results": [], "count": 0}
+            
+            df = pd.concat(all_dfs, ignore_index=True)
+            df = df.drop_duplicates(subset=['Roll Number'], keep='last')
+            
+            logger.info(f"Total unique students: {len(df)}")
+            
+            if query:
+                df = df[
+                    df['Student Name'].str.contains(query, case=False, na=False) |
+                    df['Roll Number'].astype(str).str.contains(query, case=False, na=False)
+                ]
+            
+            if department:
+                df = df[df['Department'].str.contains(department, case=False, na=False)]
+            
+            df['CGPA_numeric'] = pd.to_numeric(df['CGPA'], errors='coerce')
+            df = df[(df['CGPA_numeric'] >= min_cgpa) & (df['CGPA_numeric'] <= max_cgpa)]
+            
+            results = []
+            for _, row in df.iterrows():
+                cgpa_value = 0
+                try:
+                    cgpa_raw = row.get('CGPA')
+                    if pd.notna(cgpa_raw):
+                        cgpa_float = float(cgpa_raw)
+                        if not (pd.isna(cgpa_float) or cgpa_float == float('inf') or cgpa_float == float('-inf')):
+                            cgpa_value = round(cgpa_float, 2)
+                except (ValueError, TypeError):
+                    cgpa_value = 0
+                
+                def sanitize_value(val):
+                    if pd.isna(val):
+                        return 'N/A'
+                    if isinstance(val, (int, float, np.number)):
+                        if pd.isna(val) or val == float('inf') or val == float('-inf'):
+                            return 'N/A'
+                        return val
+                    return str(val) if val is not None else 'N/A'
+                
+                results.append({
+                    "name": sanitize_value(row.get('Student Name')),
+                    "roll_number": sanitize_value(row.get('Roll Number')),
+                    "department": sanitize_value(row.get('Department')),
+                    "cgpa": cgpa_value,
+                    "email": sanitize_value(row.get('Email')),
+                    "semester": sanitize_value(row.get('Semester'))
+                })
+            
+            logger.info(f"Found {len(results)} matching students (Excel)")
+            return {"results": results, "count": len(results), "source": "excel"}
         
-        # Read batch metadata
-        batch_metadata_file = EXCEL_DIR / "batch_metadata.json"
-        if not batch_metadata_file.exists():
+        # SUPABASE PATH
+        logger.info(f"Searching Supabase: query='{query}', dept='{department}', cgpa={min_cgpa}-{max_cgpa}")
+        
+        # Build query
+        db_query = evaluator.supabase_client.client.table('students').select('*')
+        
+        # Apply CGPA filter
+        if min_cgpa > 0 or max_cgpa < 10:
+            db_query = db_query.gte('cgpa', min_cgpa).lte('cgpa', max_cgpa)
+        
+        # Execute query
+        response = db_query.execute()
+        
+        if not response.data:
             return {"results": [], "count": 0}
         
-        with open(batch_metadata_file, 'r') as f:
-            metadata = json.load(f)
+        students = response.data
         
-        batches = metadata.get('batches', [])
-        if not batches:
-            return {"results": [], "count": 0}
-        
-        logger.info(f"Searching across {len(batches)} batches with query: '{query}'")
-        
-        # Read and combine ALL batch files
-        all_dfs = []
-        for batch in batches:
-            batch_filename = batch.get('filename')
-            if batch_filename:
-                batch_path = EXCEL_DIR / batch_filename
-                if batch_path.exists():
-                    try:
-                        df_temp = pd.read_excel(batch_path, sheet_name='Student Data')
-                        all_dfs.append(df_temp)
-                    except Exception as e:
-                        logger.warning(f"Failed to read {batch_filename}: {e}")
-        
-        if not all_dfs:
-            return {"results": [], "count": 0}
-        
-        # Combine all dataframes
-        df = pd.concat(all_dfs, ignore_index=True)
-        
-        # Remove duplicates based on Roll Number (keep latest)
-        df = df.drop_duplicates(subset=['Roll Number'], keep='last')
-        
-        logger.info(f"Total unique students: {len(df)}")
-        
-        # Apply filters
+        # Apply text search filters (client-side)
         if query:
-            df = df[
-                df['Student Name'].str.contains(query, case=False, na=False) |
-                df['Roll Number'].astype(str).str.contains(query, case=False, na=False)
-            ]
+            query_lower = query.lower()
+            students = [s for s in students if 
+                       query_lower in str(s.get('student_name', '')).lower() or 
+                       query_lower in str(s.get('roll_number', '')).lower()]
         
         if department:
-            df = df[df['Department'].str.contains(department, case=False, na=False)]
+            dept_lower = department.lower()
+            students = [s for s in students if dept_lower in str(s.get('department', '')).lower()]
         
-        # CGPA filter
-        df['CGPA_numeric'] = pd.to_numeric(df['CGPA'], errors='coerce')
-        df = df[(df['CGPA_numeric'] >= min_cgpa) & (df['CGPA_numeric'] <= max_cgpa)]
+        # Format results
+        results = [{
+            "name": s.get('student_name', 'N/A'),
+            "roll_number": s.get('roll_number', 'N/A'),
+            "department": s.get('department', 'N/A'),
+            "cgpa": round(float(s.get('cgpa', 0)), 2) if s.get('cgpa') else 0,
+            "email": s.get('email', 'N/A'),
+            "semester": s.get('semester', 'N/A')
+        } for s in students]
         
-        # Convert to list of dicts and format
-        results = []
-        for _, row in df.iterrows():
-            # Safely handle CGPA conversion
-            cgpa_value = 0
-            try:
-                cgpa_raw = row.get('CGPA')
-                if pd.notna(cgpa_raw):
-                    cgpa_float = float(cgpa_raw)
-                    # Check if CGPA is a valid number (not NaN, not Infinity)
-                    if not (pd.isna(cgpa_float) or cgpa_float == float('inf') or cgpa_float == float('-inf')):
-                        cgpa_value = round(cgpa_float, 2)
-            except (ValueError, TypeError):
-                cgpa_value = 0
-            
-            # Sanitize ALL fields to prevent JSON serialization errors
-            def sanitize_value(val):
-                """Convert any value to JSON-safe format"""
-                if pd.isna(val):
-                    return 'N/A'
-                if isinstance(val, (int, float, np.number)):
-                    if pd.isna(val) or val == float('inf') or val == float('-inf'):
-                        return 'N/A'
-                    return val
-                return str(val) if val is not None else 'N/A'
-            
-            results.append({
-                "name": sanitize_value(row.get('Student Name')),
-                "roll_number": sanitize_value(row.get('Roll Number')),
-                "department": sanitize_value(row.get('Department')),
-                "cgpa": cgpa_value,
-                "email": sanitize_value(row.get('Email')),
-                "semester": sanitize_value(row.get('Semester'))
-            })
-        
-        logger.info(f"Found {len(results)} matching students")
-        
-        return {
-            "results": results,
-            "count": len(results)
-        }
+        logger.info(f"Found {len(results)} matching students (Supabase)")
+        return {"results": results, "count": len(results), "source": "supabase"}
         
     except Exception as e:
         logger.error(f"Error searching students: {e}", exc_info=True)

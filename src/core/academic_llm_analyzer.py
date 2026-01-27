@@ -262,16 +262,16 @@ REMEMBER:
             raise
     
     def _call_cohere(self, prompt: str) -> tuple[str, Dict[str, Any]]:
-        """Call Cohere API."""
+        """Call Cohere API using Chat API."""
         try:
-            response = self.cohere_client.generate(
+            response = self.cohere_client.chat(
                 model=COHERE_MODEL,
-                prompt=prompt,
+                message=prompt,
                 max_tokens=LLM_MAX_TOKENS,
                 temperature=0.1,
             )
             
-            response_text = response.generations[0].text
+            response_text = response.text
             
             metadata = {
                 "provider": "cohere",
@@ -484,10 +484,10 @@ REMEMBER:
         
         if self.cohere_available:
             try:
-                response = self.cohere_client.generate(
-                    model=COHERE_MODEL, prompt="Test", max_tokens=5
+                response = self.cohere_client.chat(
+                    model=COHERE_MODEL, message="Test", max_tokens=5
                 )
-                results['cohere'] = bool(response.generations[0].text)
+                results['cohere'] = bool(response.text)
                 logger.info("✓ Cohere validated")
             except Exception as e:
                 logger.error(f"Cohere validation failed: {e}")

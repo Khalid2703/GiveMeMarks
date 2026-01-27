@@ -134,30 +134,48 @@ def check_and_create_if_needed():
     """Check if data exists, create if not"""
     metadata_path = EXCEL_DIR / "batch_metadata.json"
     
+    # ALWAYS check if we have valid data, even if metadata exists
+    has_valid_data = False
+    
     if metadata_path.exists():
-        print("✅ Batch metadata already exists")
+        print("✅ Batch metadata file exists")
         print(f"   Location: {metadata_path}")
         
-        # Check if batch files exist
-        with open(metadata_path, 'r') as f:
-            metadata = json.load(f)
-        
-        batches = metadata.get('batches', [])
-        print(f"   Batches found: {len(batches)}")
-        
-        for batch in batches:
-            batch_file = EXCEL_DIR / batch.get('filename')
-            if batch_file.exists():
-                print(f"   ✅ {batch.get('filename')} - {batch.get('record_count')} students")
+        try:
+            # Check if batch files actually exist
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+            
+            batches = metadata.get('batches', [])
+            print(f"   Batches in metadata: {len(batches)}")
+            
+            valid_batches = 0
+            for batch in batches:
+                batch_file = EXCEL_DIR / batch.get('filename')
+                if batch_file.exists():
+                    print(f"   ✅ {batch.get('filename')} - {batch.get('record_count')} students")
+                    valid_batches += 1
+                else:
+                    print(f"   ⚠️  {batch.get('filename')} - FILE MISSING!")
+            
+            if valid_batches > 0:
+                has_valid_data = True
+                print(f"   Found {valid_batches} valid batch file(s)")
             else:
-                print(f"   ⚠️  {batch.get('filename')} - FILE MISSING!")
+                print("   ⚠️  No valid batch files found!")
         
-        return False
-    else:
-        print("⚠️  No batch metadata found")
+        except Exception as e:
+            print(f"   ⚠️  Error reading metadata: {e}")
+            has_valid_data = False
+    
+    # If no valid data, create demo data
+    if not has_valid_data:
+        print("⚠️  No valid batch data found")
         print("   Creating demo data for deployment...")
         create_sample_batch()
         return True
+    
+    return False
 
 if __name__ == "__main__":
     print("=" * 60)
